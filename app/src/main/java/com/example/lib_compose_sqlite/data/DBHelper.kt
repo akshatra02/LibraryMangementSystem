@@ -177,7 +177,6 @@ class DBHelper(private val context: Context):
     fun issuebook(bid: Int, student_id: Int): Int {
         val db_read = this.readableDatabase
         val db_write = this.writableDatabase
-
         val selection = "$BOOK_COLUMN_ID =?"
         val selectionArgs = arrayOf(bid.toString())
         val book_cursor = db_read.query(false, BOOK_TABLE_NAME, null, selection, selectionArgs, null, null, null, null)
@@ -259,9 +258,23 @@ class DBHelper(private val context: Context):
         return db_write.insert(BOOK_TABLE_NAME,null,values)
 
     }
-    fun removebook(bookid : Int){
+    fun removebook(bookid : String):Boolean{
+        val db_write = this.writableDatabase
+        val db_read = this.readableDatabase
+        val selection = "$BOOK_COLUMN_ID=?"
+        val selectionArgs = arrayOf(bookid)
+//        val get_book_cursor = db_read.query(false,BOOK_TABLE_NAME,null,selection,selectionArgs,null,null,null,null)
+//        if (get_book_cursor.moveToFirst()){
+//
+//        }
+       return if (db_write.delete(BOOK_TABLE_NAME,selection,selectionArgs) > 0) true else false
+    }
 
-
-
+    fun getbook_byid(bookid: String):Boolean{
+        val db_read = this.readableDatabase
+        val selection = "$BOOK_COLUMN_ID=?"
+        val selectionArgs = arrayOf(bookid)
+        val get_book_cursor = db_read.query(false,BOOK_TABLE_NAME,null,selection,selectionArgs,null,null,null,null)
+        return if (get_book_cursor.count > 0) true else false
     }
 }

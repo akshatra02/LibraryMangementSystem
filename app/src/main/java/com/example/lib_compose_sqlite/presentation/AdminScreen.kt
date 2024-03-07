@@ -364,18 +364,27 @@ fun AddBookScreen(navController: NavController, context: Context){
                     modifier = Modifier
                         .fillMaxWidth()
                 )
-//                val bookType : BookType = BookType.valueOf(book_type)
-//                val new_book: Book = Book(book_id.toInt(),book_title,book_author,bookType,book_status)
+                val book_type_list : List<String> = listOf("Fiction","Biography","Historic","Magazine","Journal")
+                val booktype_isthere = book_type_list.contains(book_type)
+                var add_book:Long
+                if (booktype_isthere) {
+                    val bookType: BookType = BookType.valueOf(book_type)
+                    val new_book: Book = Book(book_id.toInt(), book_title, book_author, bookType, book_status)
+                    add_book = dbHelper.addbook(new_book)
+                }
+                else{
+                    add_book = -1
+                }
                 Button(
                     onClick = {
-//                        if (dbHelper.addbook(new_book) > 0) {
-//                            Toast.makeText(context, "Book - $book_title added successfully!", Toast.LENGTH_LONG).show()
-//                            navController.navigate(Screen.AdminScreen.route)
-//                        }
-//                        else{
-//                            Toast.makeText(context, "Sorry there is an issue!", Toast.LENGTH_LONG).show()
-//                            navController.navigate(Screen.AdminScreen.route)
-//                        }
+                        if (add_book > 0) {
+                            Toast.makeText(context, "Book - $book_title added successfully!", Toast.LENGTH_LONG).show()
+                            navController.navigate(Screen.AdminScreen.route)
+                        }
+                        else{
+                            Toast.makeText(context, "Sorry there is an issue! Kindly check the inputs.", Toast.LENGTH_LONG).show()
+                            navController.navigate(Screen.AddBookScreen.route)
+                        }
 
                     }){
                     Text("Add Book")
@@ -425,20 +434,21 @@ fun RemoveBookScreen(navController: NavController, context: Context){
                     modifier = Modifier
                         .fillMaxWidth()
                 )
-//                val remove_book:Int = book_id.toInt()
                 Button(
                     onClick = {
-//                        if (dbHelper.removebook(remove_book)) {
-//                            Toast.makeText(context, "Book - $book_title removed successfully!", Toast.LENGTH_LONG).show()
-//                            navController.navigate(Screen.AdminScreen.route)
-//                        }
-//                        else{
-//                            Toast.makeText(context, "Sorry there is an issue!", Toast.LENGTH_LONG).show()
-//                            navController.navigate(Screen.AdminScreen.route)
-//                        }
+                            if (dbHelper.removebook(book_id)) {
+                                Toast.makeText(context, "Book - $book_id removed successfully!", Toast.LENGTH_LONG)
+                                    .show()
+                                navController.navigate(Screen.AdminScreen.route)
+                            } else {
+                                Toast.makeText(context, "Failed: Check Book ID", Toast.LENGTH_LONG)
+                                    .show()
+                                navController.navigate(Screen.RemoveBookScreen.route)
+                            }
+
 
                     }){
-                    Text("Add Book")
+                    Text("Remove Book")
                 }
             }
 
