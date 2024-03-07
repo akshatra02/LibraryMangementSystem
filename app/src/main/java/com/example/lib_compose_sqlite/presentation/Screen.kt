@@ -11,5 +11,7 @@ package com.example.lib_compose_sqlite.presentation
         object IssueBookScreen : Screen("issue_books_screen")
         object AddBookScreen : Screen("add_books_screen")
         object RemoveBookScreen : Screen("removebooks_screen")
-
+        object StudentBooksScreen : Screen("student_books_screen")
+        object StudentMyBookScreen : Screen("student_mybooks_screen")
+        object SearchBookScreen : Screen("search_book_screen")
 }

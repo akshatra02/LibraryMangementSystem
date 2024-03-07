@@ -192,17 +192,17 @@ class DBHelper(private val context: Context):
 //            val assign_book_to_student = "SELECT * FROM $STUDENT_TABLE_NAME WHERE StudentId = $bid"
 //            val student_cursor = db_read.rawQuery(assign_book_to_student.to,null)
                 if (student_cursor.moveToFirst()) {
-                    var student_name = student_cursor.getInt(
+                    var student_book_id = student_cursor.getString(
                         student_cursor.getColumnIndexOrThrow(
-                            STUDENT_COLUMN_NAME
+                            STUDENT_COLUMN_RESERVEDBOOKS
                         )
                     )
-                    var student_book_limit: Int = student_cursor.getInt(
+                    var student_book_limit = student_cursor.getInt(
                         student_cursor.getColumnIndexOrThrow(
                             STUDENT_COLUMN_RESERVEDBOOKS_COUNT
                         )
                     )
-                    if (student_book_limit > 3) {
+                    if (student_book_limit >= 3) {
                         db_read.close()
                         db_write.close()
                         student_cursor.close()
@@ -210,6 +210,7 @@ class DBHelper(private val context: Context):
                         return 1
                     } else {
                         student_book_limit++
+                        student_book_id = student_book_id + "," +bid.toString()
                         val book_status_reserve = "Reserved"
                         val book_status_values = ContentValues()
                         book_status_values.put(BOOK_COLUMN_STATUS, book_status_reserve)
@@ -224,9 +225,9 @@ class DBHelper(private val context: Context):
                         db_write.update(STUDENT_TABLE_NAME, student_book_count_values, student_book_count_selection, student_book_count_selectionArgs)
 
                         val student_book_name_values = ContentValues()
-                        student_book_name_values.put(STUDENT_COLUMN_RESERVEDBOOKS, bname)
+                        student_book_name_values.put(STUDENT_COLUMN_RESERVEDBOOKS, student_book_id)
                         val student_book_name_selection = "$STUDENT_COLUMN_ID = ?"
-                        val student_book_name_selectionArgs = arrayOf(bid.toString())
+                        val student_book_name_selectionArgs = arrayOf(student_id.toString())
                         db_write.update(STUDENT_TABLE_NAME, student_book_name_values, student_book_name_selection, student_book_name_selectionArgs)
                         db_read.close()
                         db_write.close()
@@ -253,20 +254,15 @@ class DBHelper(private val context: Context):
         values.put(BOOK_COLUMN_ID,book.bookId)
         values.put(BOOK_COLUMN_TITLE,book.title)
         values.put(BOOK_COLUMN_AUTHOR,book.author)
-        values.put(BOOK_COLUMN_TYPE,book.bookType.toString())
-        values.put(BOOK_COLUMN_STATUS,book.status.toString())
+        values.put(BOOK_COLUMN_TYPE,book.bookType.name)
+        values.put(BOOK_COLUMN_STATUS,book.status.name)
         return db_write.insert(BOOK_TABLE_NAME,null,values)
 
     }
     fun removebook(bookid : String):Boolean{
         val db_write = this.writableDatabase
-        val db_read = this.readableDatabase
         val selection = "$BOOK_COLUMN_ID=?"
         val selectionArgs = arrayOf(bookid)
-//        val get_book_cursor = db_read.query(false,BOOK_TABLE_NAME,null,selection,selectionArgs,null,null,null,null)
-//        if (get_book_cursor.moveToFirst()){
-//
-//        }
        return if (db_write.delete(BOOK_TABLE_NAME,selection,selectionArgs) > 0) true else false
     }
 
@@ -277,4 +273,8 @@ class DBHelper(private val context: Context):
         val get_book_cursor = db_read.query(false,BOOK_TABLE_NAME,null,selection,selectionArgs,null,null,null,null)
         return if (get_book_cursor.count > 0) true else false
     }
+//    fun get_student_my_book():List<Book>{
+//        val db_read = this.readableDatabase
+////        val
+//    }
 }

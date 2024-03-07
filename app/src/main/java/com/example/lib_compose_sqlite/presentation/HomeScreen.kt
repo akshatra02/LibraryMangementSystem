@@ -12,7 +12,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.NavHost
@@ -68,6 +70,15 @@ fun Navigation(
         }
         composable(route = Screen.RemoveBookScreen.route){
             RemoveBookScreen(navController,LocalContext.current)
+        }
+        composable(route = Screen.StudentBooksScreen.route){
+            StudentBooksScreen(navController,LocalContext.current)
+        }
+        composable(route = Screen.StudentMyBookScreen.route){
+            StudentMyBookScreen(navController, LocalContext.current)
+        }
+        composable(route = Screen.SearchBookScreen.route){
+            SearchBookScreen(navController, LocalContext.current)
         }
     }
 }
@@ -486,19 +497,4 @@ fun StudentLoginScreen(navController: NavController,context: Context) {
     }
 }
 }
-@Composable
-fun StudentScreen(navController: NavController){
-    var text by remember {
-        mutableStateOf("")
-    }
-    LIB_COMPOSE_SQLITETheme {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(text = "HELLO Student")
-        }
-    }
-}
+
