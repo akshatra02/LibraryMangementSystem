@@ -67,7 +67,7 @@ fun Navigation(
             AddBookScreen(navController,LocalContext.current)
         }
         composable(route = Screen.RemoveBookScreen.route){
-            BooksScreen(navController,LocalContext.current)
+            RemoveBookScreen(navController,LocalContext.current)
         }
     }
 }
@@ -272,7 +272,7 @@ fun AdminLoginScreen(navController: NavController,context: Context){
 
                 }
                 ClickableText(
-                    text = AnnotatedString("Sign up"),
+                    text = AnnotatedString("New User...?Sign up"),
                     onClick = { offset ->
                         navController.navigate(Screen.AdminSignupScreen.route)
                     }
@@ -477,7 +477,7 @@ fun StudentLoginScreen(navController: NavController,context: Context) {
 
                 }
                 ClickableText(
-                    text = AnnotatedString("Sign up"),
+                    text = AnnotatedString("New User...?Sign up"),
                     onClick = { offset ->
                         navController.navigate(Screen.StudentSignupScreen.route)
                     }

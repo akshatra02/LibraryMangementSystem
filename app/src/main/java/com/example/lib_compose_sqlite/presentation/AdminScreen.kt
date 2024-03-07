@@ -19,7 +19,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.lib_compose_sqlite.Book
 import com.example.lib_compose_sqlite.BookStatus
+import com.example.lib_compose_sqlite.BookType
 import com.example.lib_compose_sqlite.Greeting
 import com.example.lib_compose_sqlite.data.DBHelper
 import com.example.lib_compose_sqlite.ui.theme.LIB_COMPOSE_SQLITETheme
@@ -288,6 +290,7 @@ fun IssueBookScreen(navController: NavController,context:Context){
 
 }
 @OptIn(ExperimentalMaterial3Api::class)
+@Composable
 fun AddBookScreen(navController: NavController, context: Context){
     val dbHelper:DBHelper =DBHelper(context)
     var book_id by remember {
@@ -302,7 +305,8 @@ fun AddBookScreen(navController: NavController, context: Context){
     var book_type by remember {
         mutableStateOf("")
     }
-    val book_status:BookStatus =BookStatus.Available
+    val bookstatus = "Available"
+    val book_status:BookStatus = BookStatus.valueOf(bookstatus)
     LIB_COMPOSE_SQLITETheme {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
@@ -360,13 +364,81 @@ fun AddBookScreen(navController: NavController, context: Context){
                     modifier = Modifier
                         .fillMaxWidth()
                 )
+//                val bookType : BookType = BookType.valueOf(book_type)
+//                val new_book: Book = Book(book_id.toInt(),book_title,book_author,bookType,book_status)
                 Button(
                     onClick = {
-
-                        navController.navigate(Screen.AdminScreen.route)
+//                        if (dbHelper.addbook(new_book) > 0) {
+//                            Toast.makeText(context, "Book - $book_title added successfully!", Toast.LENGTH_LONG).show()
+//                            navController.navigate(Screen.AdminScreen.route)
+//                        }
+//                        else{
+//                            Toast.makeText(context, "Sorry there is an issue!", Toast.LENGTH_LONG).show()
+//                            navController.navigate(Screen.AdminScreen.route)
+//                        }
 
                     }){
-                    Text("Issue Book")
+                    Text("Add Book")
+                }
+            }
+
+        }
+    }
+}
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RemoveBookScreen(navController: NavController, context: Context){
+    val dbHelper:DBHelper =DBHelper(context)
+    var book_id by remember {
+        mutableStateOf("")
+    }
+    LIB_COMPOSE_SQLITETheme {
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+            topBar = {
+                TopAppBar(title = {Text(text = "Remove Book")},
+                    navigationIcon = {
+                        IconButton(onClick = {
+                            navController.navigate(Screen.AdminScreen.route){
+                                popUpTo(Screen.AdminScreen.route){
+                                    inclusive = true
+                                }
+                            }
+                        }){
+                            Icon(
+                                imageVector = Icons.Default.ArrowBackIosNew,
+                                contentDescription = "Back"
+                            )
+                        }
+                    })}
+        ) {
+                values->
+            Column(
+                modifier = Modifier
+                    .padding(values)
+            ) {
+                Text(text = "Enter Book Id: ")
+                TextField(
+                    value = book_id, onValueChange = {
+                        book_id =it
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+//                val remove_book:Int = book_id.toInt()
+                Button(
+                    onClick = {
+//                        if (dbHelper.removebook(remove_book)) {
+//                            Toast.makeText(context, "Book - $book_title removed successfully!", Toast.LENGTH_LONG).show()
+//                            navController.navigate(Screen.AdminScreen.route)
+//                        }
+//                        else{
+//                            Toast.makeText(context, "Sorry there is an issue!", Toast.LENGTH_LONG).show()
+//                            navController.navigate(Screen.AdminScreen.route)
+//                        }
+
+                    }){
+                    Text("Add Book")
                 }
             }
 

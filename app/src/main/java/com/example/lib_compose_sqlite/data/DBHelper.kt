@@ -181,38 +181,9 @@ class DBHelper(private val context: Context):
         val selection = "$BOOK_COLUMN_ID =?"
         val selectionArgs = arrayOf(bid.toString())
         val book_cursor = db_read.query(false, BOOK_TABLE_NAME, null, selection, selectionArgs, null, null, null, null)
-        val readBook_frombid = "SELECT $BOOK_COLUMN_ID FROM $BOOK_TABLE_NAME WHERE BookId = $bid"
-//        val book_cursor = db_read.rawQuery(readBook_frombid,null)
-//        val bstatus = ""
         if (book_cursor.moveToFirst()) {
             val bstatus = book_cursor.getString(book_cursor.getColumnIndexOrThrow(BOOK_COLUMN_STATUS))
-
-            val btitle = book_cursor.getString(book_cursor.getColumnIndexOrThrow(BOOK_COLUMN_TITLE))
             val bname = book_cursor.getString(book_cursor.getColumnIndexOrThrow(BOOK_COLUMN_TITLE))
-//        }
-//        else{
-//            val bstatus = ""
-//        }
-            // Check if the cursor has data
-//        var bstatus :String =""
-//
-//        if (book_cursor.moveToFirst()) {
-//            // Check if the column exists
-//            val columnIndex = book_cursor.getColumnIndex(BOOK_COLUMN_STATUS)
-//            if (columnIndex != -1) {
-//                // Retrieve the value from the cursor
-//                val bstatus = book_cursor.getString(columnIndex)
-//                // Use the retrieved value
-//            } else {
-//                // Handle case when column doesn't exist
-//                val bstatus =""
-//            }
-//        } else {
-//            // Handle case when cursor is empty
-//            val bstatus =""
-//
-//        }
-
             if (bstatus == "Available") {
                 val selection = "$STUDENT_COLUMN_ID =?"
                 val selectionArgs = arrayOf(student_id.toString())
@@ -232,12 +203,6 @@ class DBHelper(private val context: Context):
                             STUDENT_COLUMN_RESERVEDBOOKS_COUNT
                         )
                     )
-                    var student_book_name = student_cursor.getInt(
-                        student_cursor.getColumnIndexOrThrow(
-                            STUDENT_COLUMN_RESERVEDBOOKS
-                        )
-                    )
-
                     if (student_book_limit > 3) {
                         db_read.close()
                         db_write.close()
@@ -264,16 +229,6 @@ class DBHelper(private val context: Context):
                         val student_book_name_selection = "$STUDENT_COLUMN_ID = ?"
                         val student_book_name_selectionArgs = arrayOf(bid.toString())
                         db_write.update(STUDENT_TABLE_NAME, student_book_name_values, student_book_name_selection, student_book_name_selectionArgs)
-
-//                        val update_book_query =
-//                            "UPDATE $BOOK_TABLE_NAME SET $BOOK_COLUMN_STATUS = ? WHERE BookId = ?"
-//                        db_write.rawQuery(update_book_query, arrayOf(book_status_reserve,bid.toString()))
-//                        val student_book_count_query =
-//                            "UPDATE $STUDENT_TABLE_NAME SET $STUDENT_COLUMN_RESERVEDBOOKS_COUNT = ? WHERE StudentId = ?"
-//                        val student_book_name_query =
-//                            "UPDATE $STUDENT_TABLE_NAME SET $STUDENT_COLUMN_ID = ? WHERE StudentId = ?"
-//                        db_write.rawQuery(student_book_count_query, arrayOf(student_book_limit.toString(),student_id.toString()))
-//                        db_write.rawQuery(student_book_name_query, arrayOf(bname,student_id.toString()))
                         db_read.close()
                         db_write.close()
                         student_cursor.close()
@@ -293,12 +248,6 @@ class DBHelper(private val context: Context):
             return 0
         }
     }
-//    $BOOK_TABLE_NAME (" +
-//    "$BOOK_COLUMN_ID INTEGER PRIMARY KEY ," +
-//    "$BOOK_COLUMN_TITLE TEXT," +
-//    "$BOOK_COLUMN_AUTHOR TEXT," +
-//    "$BOOK_COLUMN_TYPE TEXT," +
-//    "$BOOK_COLUMN_STATUS
     fun addbook(book:Book) : Long{
         val db_write = this.writableDatabase
         val values = ContentValues()
@@ -308,6 +257,11 @@ class DBHelper(private val context: Context):
         values.put(BOOK_COLUMN_TYPE,book.bookType.toString())
         values.put(BOOK_COLUMN_STATUS,book.status.toString())
         return db_write.insert(BOOK_TABLE_NAME,null,values)
+
+    }
+    fun removebook(bookid : Int){
+
+
 
     }
 }
