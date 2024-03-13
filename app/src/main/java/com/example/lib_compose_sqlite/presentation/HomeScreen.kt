@@ -496,7 +496,7 @@ fun StudentLoginScreen(navController: NavController,context: Context) {
                             else if (studentIdLogin > 0) {
                                 Toast.makeText(
                                     context,
-                                    "Login success $studentIdLogin",
+                                    "Login success $studentName",
                                     Toast.LENGTH_LONG
                                 )
                                     .show()
