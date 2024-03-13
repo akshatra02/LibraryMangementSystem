@@ -20,7 +20,6 @@ class DBHelper(private val context: Context):
         private const val STUDENT_TABLE_NAME = "Student"
         private const val STUDENT_COLUMN_ID = "StudentId"
         private const val STUDENT_COLUMN_NAME = "StudentName"
-        private const val STUDENT_COLUMN_PASSWORD = "StudentPassword"
         private const val STUDENT_COLUMN_RESERVEDBOOKS = "StudentReservedBooks"
         private const val STUDENT_COLUMN_RESERVEDBOOKS_COUNT = "BookCount"
 
@@ -34,13 +33,12 @@ class DBHelper(private val context: Context):
 
     override fun onCreate(db: SQLiteDatabase?) {
         val createAdminTableQuery = ("CREATE TABLE $ADMIN_TABLE_NAME (" +
-                "$ADMIN_COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT ," +
+                "$ADMIN_COLUMN_ID INTEGER PRIMARY KEY  ," +
                 "$ADMIN_COLUMN_NAME TEXT," +
                 "$ADMIN_COLUMN_PASSWORD TEXT)")
         val createStudentTableQuery = ("CREATE TABLE $STUDENT_TABLE_NAME (" +
                 "$STUDENT_COLUMN_ID INTEGER PRIMARY KEY ," +
                 "$STUDENT_COLUMN_NAME TEXT," +
-                "$STUDENT_COLUMN_PASSWORD TEXT," +
                 "$STUDENT_COLUMN_RESERVEDBOOKS TEXT," +
                 "$STUDENT_COLUMN_RESERVEDBOOKS_COUNT INTEGER)")
         val createBookTableQuery = ("CREATE TABLE $BOOK_TABLE_NAME (" +
@@ -108,19 +106,20 @@ class DBHelper(private val context: Context):
 
     }
 
-    fun addAdmin(admin: Admin?): Long {
+    fun addAdmin(admin: Admin): Long {
         val values = ContentValues().apply {
-            put(ADMIN_COLUMN_NAME, admin?.admin_name)
-            put(ADMIN_COLUMN_PASSWORD, admin?.admin_password)
+            put(ADMIN_COLUMN_ID, admin.adminId)
+            put(ADMIN_COLUMN_NAME, admin.adminName)
+            put(ADMIN_COLUMN_PASSWORD, admin.adminPassword)
         }
         val db = writableDatabase
         return db.insert(ADMIN_TABLE_NAME, null, values)
     }
 
-    fun loginadmin(admin: Admin?): Boolean {
+    fun loginadmin(admin: Admin): Boolean {
         val db = this.readableDatabase
-        val selection = "$ADMIN_COLUMN_NAME =? AND $ADMIN_COLUMN_PASSWORD =?"
-        val selectionArgs = arrayOf(admin?.admin_name, admin?.admin_password)
+        val selection = "$ADMIN_COLUMN_ID =? AND $ADMIN_COLUMN_NAME =? AND $ADMIN_COLUMN_PASSWORD =?"
+        val selectionArgs = arrayOf(admin.adminId.toString(),admin.adminName, admin.adminPassword)
 //        val cursor:Cursor = db.rawQuery("SELECT * FROM $TABLE_NAME WHERE ")
         val cursor = db.query(false, ADMIN_TABLE_NAME, null, selection, selectionArgs, null, null, null, null, null)
         val userExists = cursor.count > 0
@@ -128,153 +127,248 @@ class DBHelper(private val context: Context):
         return userExists
     }
 
-    fun addStudent(student: Student?, StudentReservedBook: String = "", StudentReservedBookCount: Int = 0): Long {
+    fun addStudent(student: Student, StudentReservedBook: String = "", StudentReservedBookCount: Int = 0): Long {
         val values = ContentValues().apply {
-            put(STUDENT_COLUMN_ID, student?.student_id)
-            put(STUDENT_COLUMN_NAME, student?.student_name)
-            put(STUDENT_COLUMN_PASSWORD, student?.student_password)
+            put(STUDENT_COLUMN_ID, student.studentId)
+            put(STUDENT_COLUMN_NAME, student.studentName)
             put(STUDENT_COLUMN_RESERVEDBOOKS, StudentReservedBook)
             put(STUDENT_COLUMN_RESERVEDBOOKS_COUNT, StudentReservedBookCount)
         }
         val db = writableDatabase
-
         return db.insert(STUDENT_TABLE_NAME, null, values)
     }
 
-    fun loginstudent(student: Student): Boolean {
+    fun loginstudent(student: Student): Int {
         val db = this.readableDatabase
-        val selection = "$STUDENT_COLUMN_ID =? AND $STUDENT_COLUMN_NAME =? AND $STUDENT_COLUMN_PASSWORD =?"
+        val selection = "$STUDENT_COLUMN_ID =? AND $STUDENT_COLUMN_NAME =?"
         val selectionArg =
-            arrayOf(student.student_id.toString(), student.student_name.toString(), student.student_password.toString())
+            arrayOf(student.studentId.toString(), student.studentName.toString())
         val cursor = db.query(false, STUDENT_TABLE_NAME, null, selection, selectionArg, null, null, null, null, null)
-        val userExists = cursor.count > 0
-        cursor.close()
-        return userExists
+        if(cursor.count>0) {
+            val studentId = student.studentId
+            cursor.close()
+            return studentId
+        }
+        return 0
     }
 
     fun getBooks(): List<Book> {
-        var book_list = mutableListOf<Book>()
+        val bookList = mutableListOf<Book>()
         val db = this.readableDatabase
         val readBook = "SELECT * FROM $BOOK_TABLE_NAME"
         val cursor = db.rawQuery(readBook, null)
         while (cursor.moveToNext()) {
             val bid = cursor.getInt(cursor.getColumnIndexOrThrow(BOOK_COLUMN_ID))
-            val btitle = cursor.getString(cursor.getColumnIndexOrThrow(BOOK_COLUMN_TITLE))
-            val bauthor = cursor.getString(cursor.getColumnIndexOrThrow(BOOK_COLUMN_AUTHOR))
-            val btypeString = cursor.getString(cursor.getColumnIndexOrThrow(BOOK_COLUMN_TYPE))
-            val btype = BookType.valueOf(btypeString)
-            val bstatusString = cursor.getString(cursor.getColumnIndexOrThrow(BOOK_COLUMN_STATUS))
-            val bstatus = BookStatus.valueOf(bstatusString)
+            val bookTitle = cursor.getString(cursor.getColumnIndexOrThrow(BOOK_COLUMN_TITLE))
+            val bookAuthor = cursor.getString(cursor.getColumnIndexOrThrow(BOOK_COLUMN_AUTHOR))
+            val bookTypeString = cursor.getString(cursor.getColumnIndexOrThrow(BOOK_COLUMN_TYPE))
+            val bookType = BookType.valueOf(bookTypeString)
+            val bookStatusString = cursor.getString(cursor.getColumnIndexOrThrow(BOOK_COLUMN_STATUS))
+            val bookStatus = BookStatus.valueOf(bookStatusString)
 
-            val book = Book(bid, btitle, bauthor, btype, bstatus)
-            book_list.add(book)
+            val book = Book(bid, bookTitle, bookAuthor, bookType, bookStatus)
+            bookList.add(book)
         }
         cursor.close()
         db.close()
-        return book_list
+        return bookList
     }
 
     fun issuebook(bid: Int, student_id: Int): Int {
-        val db_read = this.readableDatabase
-        val db_write = this.writableDatabase
+        val dbRead = this.readableDatabase
+        val dbWrite = this.writableDatabase
         val selection = "$BOOK_COLUMN_ID =?"
         val selectionArgs = arrayOf(bid.toString())
-        val book_cursor = db_read.query(false, BOOK_TABLE_NAME, null, selection, selectionArgs, null, null, null, null)
-        if (book_cursor.moveToFirst()) {
-            val bstatus = book_cursor.getString(book_cursor.getColumnIndexOrThrow(BOOK_COLUMN_STATUS))
-            val bname = book_cursor.getString(book_cursor.getColumnIndexOrThrow(BOOK_COLUMN_TITLE))
-            if (bstatus == "Available") {
-                val selection = "$STUDENT_COLUMN_ID =?"
-                val selectionArgs = arrayOf(student_id.toString())
-                val student_cursor =
-                    db_read.query(false, STUDENT_TABLE_NAME, null, selection, selectionArgs, null, null, null, null)
+        val bookCursor = dbRead.query(false, BOOK_TABLE_NAME, null, selection, selectionArgs, null, null, null, null)
+        if (bookCursor.moveToFirst()) {
+            val bookStatus = bookCursor.getString(bookCursor.getColumnIndexOrThrow(BOOK_COLUMN_STATUS))
+            if (bookStatus == "Available") {
+                val studentSelection = "$STUDENT_COLUMN_ID =?"
+                val studentSelectionArgs = arrayOf(student_id.toString())
+                val studentCursor =
+                    dbRead.query(false, STUDENT_TABLE_NAME, null, studentSelection, studentSelectionArgs, null, null, null, null)
 
 //            val assign_book_to_student = "SELECT * FROM $STUDENT_TABLE_NAME WHERE StudentId = $bid"
-//            val student_cursor = db_read.rawQuery(assign_book_to_student.to,null)
-                if (student_cursor.moveToFirst()) {
-                    var student_book_id = student_cursor.getString(
-                        student_cursor.getColumnIndexOrThrow(
+//            val studentCursor = dbRead.rawQuery(assign_book_to_student.to,null)
+                if (studentCursor.moveToFirst()) {
+                    var studentBookId = studentCursor.getString(
+                        studentCursor.getColumnIndexOrThrow(
                             STUDENT_COLUMN_RESERVEDBOOKS
                         )
                     )
-                    var student_book_limit = student_cursor.getInt(
-                        student_cursor.getColumnIndexOrThrow(
+                    var studentBookLimit = studentCursor.getInt(
+                        studentCursor.getColumnIndexOrThrow(
                             STUDENT_COLUMN_RESERVEDBOOKS_COUNT
                         )
                     )
-                    if (student_book_limit >= 3) {
-                        db_read.close()
-                        db_write.close()
-                        student_cursor.close()
-                        book_cursor.close()
+                    if (studentBookLimit > 3) {
+                        dbRead.close()
+                        dbWrite.close()
+                        studentCursor.close()
+                        bookCursor.close()
                         return 1
                     } else {
-                        student_book_limit++
-                        student_book_id = student_book_id + "," +bid.toString()
-                        val book_status_reserve = "Reserved"
-                        val book_status_values = ContentValues()
-                        book_status_values.put(BOOK_COLUMN_STATUS, book_status_reserve)
-                        val book_status_selection = "$BOOK_COLUMN_ID = ?"
-                        val book_status_selectionArgs = arrayOf(bid.toString())
-                        db_write.update(BOOK_TABLE_NAME, book_status_values, book_status_selection, book_status_selectionArgs)
+                        studentBookLimit++
+//                        studentBookId = studentBookId + "," +bid.toString()
+                        studentBookId = studentBookId.plus(",${bid}")
+                        val bookStatusReserve = "Reserved"
+                        val bookStatusValues = ContentValues()
+                        bookStatusValues.put(BOOK_COLUMN_STATUS, bookStatusReserve)
+                        val bookStatusSelection = "$BOOK_COLUMN_ID = ?"
+                        val bookStatusSelectionArgs = arrayOf(bid.toString())
+                        dbWrite.update(BOOK_TABLE_NAME, bookStatusValues, bookStatusSelection, bookStatusSelectionArgs)
 
-                        val student_book_count_values = ContentValues()
-                        student_book_count_values.put(STUDENT_COLUMN_RESERVEDBOOKS_COUNT, student_book_limit)
-                        val student_book_count_selection = "$STUDENT_COLUMN_ID = ?"
-                        val student_book_count_selectionArgs = arrayOf(student_id.toString())
-                        db_write.update(STUDENT_TABLE_NAME, student_book_count_values, student_book_count_selection, student_book_count_selectionArgs)
+                        val studentBookCountValues = ContentValues()
+                        studentBookCountValues.put(STUDENT_COLUMN_RESERVEDBOOKS_COUNT, studentBookLimit)
+                        val studentBookCountSelection = "$STUDENT_COLUMN_ID = ?"
+                        val studentBookCountSelectionArgs = arrayOf(student_id.toString())
+                        dbWrite.update(STUDENT_TABLE_NAME, studentBookCountValues, studentBookCountSelection, studentBookCountSelectionArgs)
 
-                        val student_book_name_values = ContentValues()
-                        student_book_name_values.put(STUDENT_COLUMN_RESERVEDBOOKS, student_book_id)
-                        val student_book_name_selection = "$STUDENT_COLUMN_ID = ?"
-                        val student_book_name_selectionArgs = arrayOf(student_id.toString())
-                        db_write.update(STUDENT_TABLE_NAME, student_book_name_values, student_book_name_selection, student_book_name_selectionArgs)
-                        db_read.close()
-                        db_write.close()
-                        student_cursor.close()
-                        book_cursor.close()
+                        val studentBookNameValues = ContentValues()
+                        studentBookNameValues.put(STUDENT_COLUMN_RESERVEDBOOKS, studentBookId)
+                        val studentBookNameSelection = "$STUDENT_COLUMN_ID = ?"
+                        val studentBookNameSelectionArgs = arrayOf(student_id.toString())
+                        dbWrite.update(STUDENT_TABLE_NAME, studentBookNameValues, studentBookNameSelection, studentBookNameSelectionArgs)
+                        dbRead.close()
+                        dbWrite.close()
+                        studentCursor.close()
+                        bookCursor.close()
                         return 2
                     }
                 }
                 return 0
             } else {
-                db_read.close()
-                db_write.close()
-                book_cursor.close()
+                dbRead.close()
+                dbWrite.close()
+                bookCursor.close()
                 return 3
             }
-            return 0
         } else {
             return 0
         }
     }
     fun addbook(book:Book) : Long{
-        val db_write = this.writableDatabase
+        val dbWrite = this.writableDatabase
         val values = ContentValues()
         values.put(BOOK_COLUMN_ID,book.bookId)
         values.put(BOOK_COLUMN_TITLE,book.title)
         values.put(BOOK_COLUMN_AUTHOR,book.author)
         values.put(BOOK_COLUMN_TYPE,book.bookType.name)
         values.put(BOOK_COLUMN_STATUS,book.status.name)
-        return db_write.insert(BOOK_TABLE_NAME,null,values)
+        return dbWrite.insert(BOOK_TABLE_NAME,null,values)
 
     }
-    fun removebook(bookid : String):Boolean{
-        val db_write = this.writableDatabase
+    fun removebook(bookid : Int):Boolean{
+        val dbWrite = this.writableDatabase
         val selection = "$BOOK_COLUMN_ID=?"
-        val selectionArgs = arrayOf(bookid)
-       return if (db_write.delete(BOOK_TABLE_NAME,selection,selectionArgs) > 0) true else false
+        val selectionArgs = arrayOf(bookid.toString())
+       return if (dbWrite.delete(BOOK_TABLE_NAME,selection,selectionArgs) > 0) true else false
+    }
+    fun get_student_my_book(studentid : Int):List<Book>{
+        val dbRead = this.readableDatabase
+        val selection = "$STUDENT_COLUMN_ID = ?"
+        val selectionArgs = arrayOf(studentid.toString())
+        val getStudentInfocursor = dbRead.query(false, STUDENT_TABLE_NAME,null,selection,selectionArgs,null,null,null,null)
+        if (getStudentInfocursor.moveToFirst()) {
+            val studentBookId = getStudentInfocursor.getString(
+                getStudentInfocursor.getColumnIndexOrThrow(
+                    STUDENT_COLUMN_RESERVEDBOOKS
+                )
+            )
+            val bookIds = studentBookId.split(",")
+            val studentBookIdList = mutableListOf<String>(*bookIds.toTypedArray())
+            val books:MutableList<Book> = mutableListOf()
+            for (bookId in studentBookIdList) {
+                val bookSelection = "$BOOK_COLUMN_ID=?"
+                val bookSelectionArgs = arrayOf(bookId)
+                val getBookCursor = dbRead.query(false, BOOK_TABLE_NAME,null,bookSelection,bookSelectionArgs,null,null,null,null)
+                if (getBookCursor.moveToFirst()){
+                    val bookTitle = getBookCursor.getString(getBookCursor.getColumnIndexOrThrow(BOOK_COLUMN_TITLE))
+                    val bookAuthor = getBookCursor.getString(getBookCursor.getColumnIndexOrThrow(BOOK_COLUMN_AUTHOR))
+                    val bookType= getBookCursor.getString(getBookCursor.getColumnIndexOrThrow(BOOK_COLUMN_TYPE))
+                    val bookStatus = getBookCursor.getString(getBookCursor.getColumnIndexOrThrow(BOOK_COLUMN_STATUS))
+                    val book = Book(bookId.toInt(),bookTitle,bookAuthor,BookType.valueOf(bookType),BookStatus.valueOf(bookStatus))
+                    books.add(book)
+                }
+                getBookCursor.close()
+            }
+
+            getStudentInfocursor.close()
+            dbRead.close()
+            return books
+        }
+        else{
+            getStudentInfocursor.close()
+            dbRead.close()
+            return emptyList()
+        }
     }
 
-    fun getbook_byid(bookid: String):Boolean{
-        val db_read = this.readableDatabase
-        val selection = "$BOOK_COLUMN_ID=?"
-        val selectionArgs = arrayOf(bookid)
-        val get_book_cursor = db_read.query(false,BOOK_TABLE_NAME,null,selection,selectionArgs,null,null,null,null)
-        return if (get_book_cursor.count > 0) true else false
+    fun return_book(bid:Int,studentid: Int):Int{
+        val dbRead = this.readableDatabase
+        val dbWrite = this.writableDatabase
+        val selection = "$BOOK_COLUMN_ID = ?"
+        val selectionArguments = arrayOf(bid.toString())
+        val getReturnBookCursor = dbRead.query(false, BOOK_TABLE_NAME,null,selection,selectionArguments,null,null,null,null)
+        if (getReturnBookCursor.moveToFirst()){
+            val values = ContentValues()
+            values.put(BOOK_COLUMN_STATUS,"Available")
+            val updateBookCursor = dbWrite.update(BOOK_TABLE_NAME,values,selection,selectionArguments)
+            val studentSelection = "$STUDENT_COLUMN_ID = ?"
+            val studentSelectionArg = arrayOf(studentid.toString())
+            val getStudent = dbRead.query(false, STUDENT_TABLE_NAME,null,studentSelection,studentSelectionArg,null,null,null,null)
+
+
+//            val studentSelection = "$STUDENT_COLUMN_ID = ?"
+//            val studentSelectionArg = arrayOf(studentid.toString())
+//            val getStudent = dbRead.query(false, STUDENT_TABLE_NAME,null,studentSelection,studentSelectionArg,null,null,null,null)
+            if (getStudent.moveToFirst()){
+                val studentReservedBooks = getStudent.getString(getStudent.getColumnIndexOrThrow(
+                    STUDENT_COLUMN_RESERVEDBOOKS))
+                var studentBookCount = getStudent.getInt(getStudent.getColumnIndexOrThrow(
+                    STUDENT_COLUMN_RESERVEDBOOKS_COUNT))
+                if (studentBookCount >0) {
+                    val updatedStudentReservedBooks = studentReservedBooks.replace(",$bid", "")
+                    val studentValuesBook = ContentValues()
+                    studentValuesBook.put(STUDENT_COLUMN_RESERVEDBOOKS, updatedStudentReservedBooks)
+                    val updateStudentBooks =
+                        dbWrite.update(STUDENT_TABLE_NAME, studentValuesBook, studentSelection, studentSelectionArg)
+                    val studentValuesBookCount = ContentValues()
+                    studentValuesBookCount.put(STUDENT_COLUMN_RESERVEDBOOKS_COUNT, --studentBookCount)
+                    val updateStudentBooksCount = dbWrite.update(
+                        STUDENT_TABLE_NAME,
+                        studentValuesBookCount,
+                        studentSelection,
+                        studentSelectionArg
+                    )
+                    if (updateStudentBooksCount > 0 && updateStudentBooks > 0 && updateBookCursor > 0) {
+                        getReturnBookCursor.close()
+                        getStudent.close()
+                        dbWrite.close()
+                        dbRead.close()
+                        return 1
+                    }
+                }
+                else{
+                    getReturnBookCursor.close()
+                    getStudent.close()
+                    dbWrite.close()
+                    dbRead.close()
+                    return -2
+                }
+            }
+                else{
+                    getReturnBookCursor.close()
+                    getStudent.close()
+                    dbWrite.close()
+                    dbRead.close()
+                    return -1
+                }
+        }
+
+        getReturnBookCursor.close()
+        dbWrite.close()
+        dbRead.close()
+        return 0
     }
-//    fun get_student_my_book():List<Book>{
-//        val db_read = this.readableDatabase
-////        val
-//    }
 }

@@ -13,78 +13,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.navArgument
 import com.example.lib_compose_sqlite.Admin
 import com.example.lib_compose_sqlite.Student
 import com.example.lib_compose_sqlite.data.DBHelper
 import com.example.lib_compose_sqlite.ui.theme.LIB_COMPOSE_SQLITETheme
-
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Navigation(
-    navController: NavController
-){
-    val navController = rememberNavController()
-
-    NavHost(
-        navController = navController,
-        startDestination = Screen.HomeScreen.route
-    )
-    {
-
-        composable(route = Screen.HomeScreen.route){
-            HomeScreen(navController)
-        }
-        composable(route = Screen.AdminLoginScreen.route){
-            AdminLoginScreen(navController,LocalContext.current)
-        }
-        composable(route = Screen.AdminSignupScreen.route){
-            AdminSignupScreen(navController,LocalContext.current)
-        }
-        composable(route = Screen.AdminScreen.route){
-            AdminScreen(navController)
-        }
-        composable(route = Screen.StudentLoginScreen.route){
-            StudentLoginScreen(navController,LocalContext.current)
-        }
-        composable(route = Screen.StudentSignupScreen.route){
-            StudentSignupScreen(navController,LocalContext.current)
-        }
-        composable(route = Screen.StudentScreen.route){
-            StudentScreen(navController)
-        }
-        composable(route = Screen.BooksScreen.route){
-            BooksScreen(navController,LocalContext.current)
-        }
-        composable(route = Screen.IssueBookScreen.route){
-            IssueBookScreen(navController,LocalContext.current)
-        }
-        composable(route = Screen.AddBookScreen.route){
-            AddBookScreen(navController,LocalContext.current)
-        }
-        composable(route = Screen.RemoveBookScreen.route){
-            RemoveBookScreen(navController,LocalContext.current)
-        }
-        composable(route = Screen.StudentBooksScreen.route){
-            StudentBooksScreen(navController,LocalContext.current)
-        }
-        composable(route = Screen.StudentMyBookScreen.route){
-            StudentMyBookScreen(navController, LocalContext.current)
-        }
-        composable(route = Screen.SearchBookScreen.route){
-            SearchBookScreen(navController, LocalContext.current)
-        }
-    }
-}
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(navController:NavController) {
     LIB_COMPOSE_SQLITETheme {
         Scaffold(
             modifier = Modifier
@@ -102,6 +46,10 @@ fun HomeScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 //            Text(text = "LIBRARY MANAGEMENT SYSTEM")
+            Spacer(modifier = Modifier.height(100.dp))
+            Text(text = "Welcome to our Library!\n Explore the world of books and expand your horizons.", textAlign = TextAlign.Center, style = TextStyle(fontSize = 20.sp))
+            Spacer(modifier = Modifier.height(100.dp))
+
             Button(
                 onClick = {
                     navController.navigate(Screen.AdminLoginScreen.route)
@@ -110,6 +58,8 @@ fun HomeScreen(navController: NavController) {
                 Text("Admin")
 
             }
+            Spacer(modifier = Modifier.height(20.dp))
+
             Button(
                 onClick = {
                     navController.navigate(Screen.StudentLoginScreen.route)
@@ -124,10 +74,13 @@ fun HomeScreen(navController: NavController) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdminSignupScreen(navController: NavController,context: Context) {
-    var text by remember {
+    var adminId by remember {
         mutableStateOf("")
     }
-    var password by remember {
+    var adminName by remember {
+        mutableStateOf("")
+    }
+    var adminPassword by remember {
         mutableStateOf("")
     }
     LIB_COMPOSE_SQLITETheme {
@@ -160,41 +113,66 @@ fun AdminSignupScreen(navController: NavController,context: Context) {
                 .padding(values),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            var dbhelper: DBHelper = DBHelper(context)
-            Text(text = "SIGN UP PAGE")
+            val dbhelper = DBHelper(context)
+            Text(text = "ADMIN SIGN UP PAGE")
+            Spacer(modifier = Modifier.height(20.dp))
+            Text(text = "ID")
+            TextField(
+                value = adminId, onValueChange = {
+                    adminId = it
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+
             Text(text = "Name")
             TextField(
-                value = text, onValueChange = {
-                    text = it
+                value = adminName, onValueChange = {
+                    adminName = it
                 },
                 modifier = Modifier
                     .fillMaxWidth()
             )
+            Spacer(modifier = Modifier.height(20.dp))
+
             Text(text = "Password")
             TextField(
-                value = password, onValueChange = {
-                    password = it
+                value = adminPassword, onValueChange = {
+                    adminPassword = it
                 },
                 modifier = Modifier
                     .fillMaxWidth()
             )
+            Spacer(modifier = Modifier.height(20.dp))
+
             Button(
                 onClick = {
-                    val admin = Admin(text, password)
-                    if (dbhelper.addAdmin(admin) > 0) {
-                        navController.navigate(Screen.HomeScreen.route) {
-                            popUpTo(Screen.HomeScreen.route) {
-                                inclusive = true
+                    try {
+                        val admin = Admin(adminId.toInt(), adminName, adminPassword)
+                        if (dbhelper.addAdmin(admin) > 0) {
+                            navController.navigate(Screen.AdminLoginScreen.route) {
+                                popUpTo(Screen.AdminLoginScreen.route) {
+                                    inclusive = true
+                                }
                             }
+                        } else {
+                            Toast.makeText(
+                                context,
+                                "Admin Signup Failed!",
+                                Toast.LENGTH_LONG
+                            )
+                                .show()
+
                         }
-                    } else {
+                    }
+                    catch (e : NumberFormatException){
                         Toast.makeText(
                             context,
-                            "Student Signup Failed!",
+                            "Admin ID must be number!",
                             Toast.LENGTH_LONG
                         )
                             .show()
-
                     }
                 }) {
                 Text("Signup")
@@ -208,10 +186,13 @@ fun AdminSignupScreen(navController: NavController,context: Context) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdminLoginScreen(navController: NavController,context: Context){
-    var text by remember {
+    var adminId by remember {
         mutableStateOf("")
     }
-    var password by remember {
+    var adminName by remember {
+        mutableStateOf("")
+    }
+    var adminPassword by remember {
         mutableStateOf("")
     }
     LIB_COMPOSE_SQLITETheme {
@@ -244,49 +225,86 @@ fun AdminLoginScreen(navController: NavController,context: Context){
                     .padding(values),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = "LOGIN PAGE")
-                var dbhelper: DBHelper = DBHelper(context)
+                Text(text = "ADMIN LOGIN PAGE")
+                val dbhelper: DBHelper = DBHelper(context)
+                Spacer(modifier = Modifier.height(20.dp))
+                Text(text = "ID")
+                TextField(
+                    value = adminId, onValueChange = {
+                        adminId = it
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(20.dp))
                 Text(text = "Name")
                 TextField(
-                    value = text, onValueChange = {
-                        text = it
+                    value = adminName, onValueChange = {
+                        adminName = it
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                 )
+                Spacer(modifier = Modifier.height(20.dp))
+
                 Text(text = "Password")
                 TextField(
-                    value = password, onValueChange = {
-                        password = it
+                    value = adminPassword, onValueChange = {
+                        adminPassword = it
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                 )
+                Spacer(modifier = Modifier.height(20.dp))
+
                 Button(
                     onClick = {
-                        val admin = Admin(text, password)
-                        if (dbhelper.loginadmin(admin)) {
-                            navController.navigate(Screen.AdminScreen.route)
-                        } else {
+                        try {
+                            val admin = Admin(adminId.toInt(), adminName, adminPassword)
+                            if (adminName == "" || adminPassword == "") {
+                                Toast.makeText(
+                                    context,
+                                    "Please provide both your name and password.",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            } else if (dbhelper.loginadmin(admin)) {
+                                Toast.makeText(context, "Welcome $adminName", Toast.LENGTH_LONG).show()
+
+                                navController.navigate(Screen.AdminScreen.route)
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    "Invalid login credentials.",
+                                    Toast.LENGTH_LONG
+                                )
+                                    .show()
+
+                            }
+                        }
+                        catch (e : NumberFormatException){
                             Toast.makeText(
                                 context,
-                                "Login Failed",
+                                "Admin ID must be number!",
                                 Toast.LENGTH_LONG
                             )
                                 .show()
-
                         }
+
                     }
                 )
                 {
                     Text("Login")
 
                 }
+                Spacer(modifier = Modifier.height(30.dp))
+
                 ClickableText(
                     text = AnnotatedString("New User...?Sign up"),
                     onClick = { offset ->
                         navController.navigate(Screen.AdminSignupScreen.route)
-                    }
+                    },
+                    style = TextStyle(fontSize = 20.sp)
+
                 )
             }
         }
@@ -296,13 +314,10 @@ fun AdminLoginScreen(navController: NavController,context: Context){
 @Composable
 fun StudentSignupScreen(navController: NavController,context: Context)
 {
-    var student_id by remember {
+    var studentId by remember {
         mutableStateOf("")
     }
-    var student_name by remember {
-        mutableStateOf("")
-    }
-    var student_password by remember {
+    var studentName by remember {
         mutableStateOf("")
     }
     LIB_COMPOSE_SQLITETheme {
@@ -335,37 +350,39 @@ fun StudentSignupScreen(navController: NavController,context: Context)
                     .padding(values),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                var dbhelper: DBHelper = DBHelper(context)
+                val dbhelper: DBHelper = DBHelper(context)
                 Text(text = "STUDENT SIGN UP PAGE")
+                Spacer(modifier = Modifier.height(20.dp))
+
                 Text(text = "Student ID")
                 TextField(
-                    value = student_id, onValueChange = {
-                        student_id = it
+                    value = studentId, onValueChange = {
+                        studentId = it
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                 )
+                Spacer(modifier = Modifier.height(20.dp))
+
                 Text(text = "Student Name")
                 TextField(
-                    value = student_name, onValueChange = {
-                        student_name = it
+                    value = studentName, onValueChange = {
+                        studentName = it
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                 )
-                Text(text = "Student Password")
-                TextField(
-                    value = student_password, onValueChange = {
-                        student_password = it
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
+                Spacer(modifier = Modifier.height(20.dp))
                 Button(
                     onClick = {
-                        val student = Student(student_id.toInt(), student_name, student_password)
+
                         try {
-                            if (dbhelper.addStudent(student) > 0) {
+                            val student = Student(studentId.toInt(), studentName)
+                            if (studentId==""|| studentName=="" ){
+                                Toast.makeText(context, "Please enter your name.", Toast.LENGTH_LONG).show()
+                            }
+                            else if (dbhelper.addStudent(student) > 0) {
+                                Toast.makeText(context, "Signup Successfull",Toast.LENGTH_LONG).show()
                                 navController.navigate(Screen.StudentLoginScreen.route) {
                                     popUpTo(Screen.HomeScreen.route) {
                                         inclusive = true
@@ -381,10 +398,10 @@ fun StudentSignupScreen(navController: NavController,context: Context)
 
                             }
                         }
-                        catch (e : Exception){
+                        catch (e : NumberFormatException){
                             Toast.makeText(
                                 context,
-                                "ERROR!",
+                                "Student ID must be number!",
                                 Toast.LENGTH_LONG
                             )
                                 .show()
@@ -402,13 +419,10 @@ fun StudentSignupScreen(navController: NavController,context: Context)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StudentLoginScreen(navController: NavController,context: Context) {
-    var student_id by remember {
+    var studentId by remember {
         mutableStateOf("")
     }
-    var student_name by remember {
-        mutableStateOf("")
-    }
-    var student_password by remember {
+    var studentName by remember {
         mutableStateOf("")
     }
     LIB_COMPOSE_SQLITETheme {
@@ -442,44 +456,68 @@ fun StudentLoginScreen(navController: NavController,context: Context) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(text = "STUDENT LOGIN PAGE")
-                var dbhelper: DBHelper = DBHelper(context)
+                val dbhelper = DBHelper(context)
+                Spacer(modifier = Modifier.height(20.dp))
+
                 Text(text = "Student ID")
                 TextField(
-                    value = student_id, onValueChange = {
-                        student_id = it
+                    value = studentId, onValueChange = {
+                        studentId = it
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                 )
+                Spacer(modifier = Modifier.height(20.dp))
+
                 Text(text = "Student Name")
                 TextField(
-                    value = student_name, onValueChange = {
-                        student_name = it
+                    value = studentName, onValueChange = {
+                        studentName = it
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                 )
-                Text(text = "Student Password")
-                TextField(
-                    value = student_password, onValueChange = {
-                        student_password = it
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
+                Spacer(modifier = Modifier.height(20.dp))
+
                 Button(
                     onClick = {
-                        val student = Student(student_id.toInt(), student_name, student_password)
-                        if (dbhelper.loginstudent(student)) {
-                            navController.navigate(Screen.StudentScreen.route)
-                        } else {
+                        try {
+                            val student = Student(studentId.toInt(), studentName)
+                            val studentIdLogin = dbhelper.loginstudent(student)
+                            if(studentName==""){
+                                Toast.makeText(
+                                    context,
+                                    "Please enter your name.",
+                                    Toast.LENGTH_LONG
+                                )
+                                    .show()
+
+                            }
+                            else if (studentIdLogin > 0) {
+                                Toast.makeText(
+                                    context,
+                                    "Login success $studentIdLogin",
+                                    Toast.LENGTH_LONG
+                                )
+                                    .show()
+                                navController.navigate("${Screen.StudentScreen.route}/$studentIdLogin")
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    "Invalid login credentials.",
+                                    Toast.LENGTH_LONG
+                                )
+                                    .show()
+
+                            }
+                        }
+                        catch (e : NumberFormatException){
                             Toast.makeText(
                                 context,
-                                "Login Failed",
+                                "Student ID must be number!",
                                 Toast.LENGTH_LONG
                             )
                                 .show()
-
                         }
                     }
                 )
@@ -487,14 +525,16 @@ fun StudentLoginScreen(navController: NavController,context: Context) {
                     Text("Login")
 
                 }
+                Spacer(modifier = Modifier.height(30.dp))
                 ClickableText(
                     text = AnnotatedString("New User...?Sign up"),
                     onClick = { offset ->
                         navController.navigate(Screen.StudentSignupScreen.route)
-                    }
+                    },
+                    style = TextStyle(fontSize = 20.sp)
+
                 )
             }
     }
 }
 }
-
