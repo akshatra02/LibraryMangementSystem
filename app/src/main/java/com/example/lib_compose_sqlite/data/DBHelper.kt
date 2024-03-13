@@ -5,6 +5,11 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import androidx.core.database.getStringOrNull
 import com.example.lib_compose_sqlite.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.withContext
 
 class DBHelper(private val context: Context):
     SQLiteOpenHelper(context, DATABASE_NAME,null, DATABASE_VERSION) {
@@ -120,7 +125,6 @@ class DBHelper(private val context: Context):
         val db = this.readableDatabase
         val selection = "$ADMIN_COLUMN_ID =? AND $ADMIN_COLUMN_NAME =? AND $ADMIN_COLUMN_PASSWORD =?"
         val selectionArgs = arrayOf(admin.adminId.toString(),admin.adminName, admin.adminPassword)
-//        val cursor:Cursor = db.rawQuery("SELECT * FROM $TABLE_NAME WHERE ")
         val cursor = db.query(false, ADMIN_TABLE_NAME, null, selection, selectionArgs, null, null, null, null, null)
         val userExists = cursor.count > 0
         cursor.close()
@@ -152,9 +156,9 @@ class DBHelper(private val context: Context):
         return 0
     }
 
-    fun getBooks(): List<Book> {
+    suspend fun getBooks(): List<Book> = withContext(Dispatchers.IO) {
+        val db = readableDatabase
         val bookList = mutableListOf<Book>()
-        val db = this.readableDatabase
         val readBook = "SELECT * FROM $BOOK_TABLE_NAME"
         val cursor = db.rawQuery(readBook, null)
         while (cursor.moveToNext()) {
@@ -171,7 +175,7 @@ class DBHelper(private val context: Context):
         }
         cursor.close()
         db.close()
-        return bookList
+        return@withContext bookList
     }
 
     fun issuebook(bid: Int, student_id: Int): Int {
@@ -187,9 +191,6 @@ class DBHelper(private val context: Context):
                 val studentSelectionArgs = arrayOf(student_id.toString())
                 val studentCursor =
                     dbRead.query(false, STUDENT_TABLE_NAME, null, studentSelection, studentSelectionArgs, null, null, null, null)
-
-//            val assign_book_to_student = "SELECT * FROM $STUDENT_TABLE_NAME WHERE StudentId = $bid"
-//            val studentCursor = dbRead.rawQuery(assign_book_to_student.to,null)
                 if (studentCursor.moveToFirst()) {
                     var studentBookId = studentCursor.getString(
                         studentCursor.getColumnIndexOrThrow(
@@ -209,7 +210,6 @@ class DBHelper(private val context: Context):
                         return 1
                     } else {
                         studentBookLimit++
-//                        studentBookId = studentBookId + "," +bid.toString()
                         studentBookId = studentBookId.plus(",${bid}")
                         val bookStatusReserve = "Reserved"
                         val bookStatusValues = ContentValues()
@@ -264,8 +264,8 @@ class DBHelper(private val context: Context):
         val selectionArgs = arrayOf(bookid.toString())
        return if (dbWrite.delete(BOOK_TABLE_NAME,selection,selectionArgs) > 0) true else false
     }
-    fun get_student_my_book(studentid : Int):List<Book>{
-        val dbRead = this.readableDatabase
+    fun get_student_my_book(studentid : Int):Flow<List<Book>> = flow {
+        val dbRead = readableDatabase
         val selection = "$STUDENT_COLUMN_ID = ?"
         val selectionArgs = arrayOf(studentid.toString())
         val getStudentInfocursor = dbRead.query(false, STUDENT_TABLE_NAME,null,selection,selectionArgs,null,null,null,null)
@@ -295,14 +295,14 @@ class DBHelper(private val context: Context):
 
             getStudentInfocursor.close()
             dbRead.close()
-            return books
+            emit(books)
         }
         else{
             getStudentInfocursor.close()
             dbRead.close()
-            return emptyList()
+            emit(emptyList())
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
     fun return_book(bid:Int,studentid: Int):Int{
         val dbRead = this.readableDatabase
@@ -357,13 +357,13 @@ class DBHelper(private val context: Context):
                     return -2
                 }
             }
-                else{
-                    getReturnBookCursor.close()
-                    getStudent.close()
-                    dbWrite.close()
-                    dbRead.close()
-                    return -1
-                }
+            else{
+                getReturnBookCursor.close()
+                getStudent.close()
+                dbWrite.close()
+                dbRead.close()
+                return -1
+            }
         }
 
         getReturnBookCursor.close()
