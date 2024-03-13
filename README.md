@@ -24,8 +24,8 @@ The Library Management System (LMS) is a software application designed to automa
 
 ## Welcome Page
 - The welcome screen serves as the initial interface for accessing the Library Management System (LMS) application. It offers convenient access for both administrators and students through separate login portals.
-  ![Library Management System](/home/akshatra-pt7566/IdeaProjects/LIB_COMPOSE_SQLITE/app/images/HomeScreen.png)
-  ![Library Management System](/home/akshatra-pt7566/IdeaProjects/LIB_COMPOSE_SQLITE/app/images/AdminLogin.png)
+  ![Home Screen](app/images/HomeScreen.png)
+  ![Admin Login](app/images/AdminLogin.png)
 
 
 ## Admin Page
@@ -44,9 +44,9 @@ The Library Management System (LMS) is a software application designed to automa
 3. **Remove Books**:
     - Provides functionality to remove existing books from the library inventory.
     - Administrators can select books to be removed based on book ID.
-![Library Management System](/home/akshatra-pt7566/IdeaProjects/LIB_COMPOSE_SQLITE/app/images/AdminScreen.png)
-      ![Library Management System](/home/akshatra-pt7566/IdeaProjects/LIB_COMPOSE_SQLITE/app/images/AllBooks.png)
-      ![Library Management System](/home/akshatra-pt7566/IdeaProjects/LIB_COMPOSE_SQLITE/app/images/AddBook.png)
+![Admin Screen](app/images/AdminScreen.png)
+      ![All books](app/images/AllBooks.png)
+      ![Add Book](LIB_COMPOSE_SQLITE/app/images/AddBook.png)
 
 ## Student Page
 1. **View Books**:
@@ -61,8 +61,8 @@ The Library Management System (LMS) is a software application designed to automa
     - Allows students to return borrowed books to the library.
     - Requires input of book ID and updates book availability status accordingly.
 
-      ![Library Management System](/home/akshatra-pt7566/IdeaProjects/LIB_COMPOSE_SQLITE/app/images/StudentPage.png)
-      ![Library Management System](/home/akshatra-pt7566/IdeaProjects/LIB_COMPOSE_SQLITE/app/images/StudentReservedBooks.png)
+      ![Student Page](app/images/StudentPage.png)
+      ![Student Reserved books](app/images/StudentReservedBooks.png)
 ## Conclusion
 The Library Management System (LMS) simplifies library operations, enhances user experience, and improves efficiency for administrators and students alike. Leveraging Kotlin, Jetpack Compose, and SQLite, the system offers a modern and robust solution for managing library resources effectively.
 
