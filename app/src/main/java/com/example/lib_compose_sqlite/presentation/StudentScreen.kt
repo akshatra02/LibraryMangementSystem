@@ -238,7 +238,6 @@ fun StudentMyBookScreen(navController: NavController,context: Context,studentId:
                 )
             }
         )
-
         { values ->
             LazyColumn(
                 modifier = Modifier
@@ -329,8 +328,7 @@ fun ReturnBookScreen(navController: NavController,context: Context,studentId: In
             }
         )
 
-        {
-                values ->
+        { values ->
             Column(
                 modifier = Modifier
                     .padding(values),

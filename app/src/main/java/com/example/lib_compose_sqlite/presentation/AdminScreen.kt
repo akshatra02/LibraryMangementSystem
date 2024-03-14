@@ -29,9 +29,7 @@ import com.example.lib_compose_sqlite.BookStatus
 import com.example.lib_compose_sqlite.BookType
 import com.example.lib_compose_sqlite.data.DBHelper
 import com.example.lib_compose_sqlite.ui.theme.LIB_COMPOSE_SQLITETheme
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -183,50 +181,51 @@ fun BooksScreen(navController: NavController,context: Context) {
                     .fillMaxWidth()
                     .padding(values),
             ) {
-                val dbHelper = DBHelper(context)
-                runBlocking {
+                runBlocking{
+                    val dbHelper = DBHelper(context)
                     val viewBooks = dbHelper.getBooks()
-                    val booksSize = viewBooks.size
-                    if (booksSize > 0) {
-                        items(booksSize) {
-                            val book = viewBooks.get(it)
-                            val booksStatus: String
-                            if (book.status == BookStatus.Available) {
-                                booksStatus = " \uD83D\uDFE2 ${book.status}"
-                            } else {
-                                booksStatus = " \uD83D\uDD34 ${book.status}"
-                            }
-                            Card(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                            ) {
-                                Text(
-                                    text = "${book.bookId} - ${book.title}",
-                                    style = TextStyle(fontSize = 24.sp)
-                                )
-                                Text(
-                                    text = "Author: ${book.author} - Type: ${book.bookType} "
-                                )
+                        val booksSize = viewBooks.size
+                        if (booksSize > 0) {
+                            items(booksSize) {
+                                val book = viewBooks.get(it)
+                                val booksStatus: String
+                                if (book.status == BookStatus.Available) {
+                                    booksStatus = " \uD83D\uDFE2 ${book.status}"
+                                } else {
+                                    booksStatus = " \uD83D\uDD34 ${book.status}"
+                                }
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                ) {
+                                    Text(
+                                        text = "${book.bookId} - ${book.title}",
+                                        style = TextStyle(fontSize = 24.sp)
+                                    )
+                                    Text(
+                                        text = "Author: ${book.author} - Type: ${book.bookType} "
+                                    )
 
-                                Text(
-                                    text = booksStatus
+                                    Text(
+                                        text = booksStatus
 
-                                )
+                                    )
+                                    Spacer(modifier = Modifier.height(20.dp))
+                                }
                                 Spacer(modifier = Modifier.height(20.dp))
-                            }
-                            Spacer(modifier = Modifier.height(20.dp))
 
-                        }
-                    } else {
-                        items(1) {
-                            Card(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                            ) {
-                                Text(
-                                    text = "No books are in the Library.",
-                                    style = TextStyle(fontSize = 24.sp)
-                                )
+                            }
+                        } else {
+                            items(1) {
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                ) {
+                                    Text(
+                                        text = "No books are in the Library.",
+                                        style = TextStyle(fontSize = 24.sp)
+                                    )
+                                }
                             }
                         }
                     }
@@ -234,7 +233,6 @@ fun BooksScreen(navController: NavController,context: Context) {
             }
         }
     }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

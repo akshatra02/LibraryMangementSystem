@@ -54,7 +54,7 @@ class DBHelper(private val context: Context):
                 "$BOOK_COLUMN_AUTHOR TEXT," +
                 "$BOOK_COLUMN_TYPE TEXT," +
                 "$BOOK_COLUMN_STATUS TEXT)")
-        //Book entiries
+        //Book entries
         val b1 = Book(101, "Dravidian Lang tech", "Ramaswamy", BookType.Journal, BookStatus.Available)
         val b2 = Book(102, "Nine Tale Fox", "Wil Tal", BookType.Fiction, BookStatus.Reserved)
         val b3 = Book(103, "Forbes", "Kim", BookType.Magazine, BookStatus.Available)
@@ -384,9 +384,7 @@ class DBHelper(private val context: Context):
             val getReturnBookCursor =
                 dbRead.query(false, BOOK_TABLE_NAME, null, selection, selectionArguments, null, null, null, null)
             if (getReturnBookCursor.moveToFirst()) {
-                val values = ContentValues()
-                values.put(BOOK_COLUMN_STATUS, "Available")
-                val updateBookCursor = dbWrite.update(BOOK_TABLE_NAME, values, selection, selectionArguments)
+
                 val studentSelection = "$STUDENT_COLUMN_ID = ?"
                 val studentSelectionArg = arrayOf(studentid.toString())
                 val getStudent = dbRead.query(
@@ -400,8 +398,6 @@ class DBHelper(private val context: Context):
                     null,
                     null
                 )
-
-
 //            val studentSelection = "$STUDENT_COLUMN_ID = ?"
 //            val studentSelectionArg = arrayOf(studentid.toString())
 //            val getStudent = dbRead.query(false, STUDENT_TABLE_NAME,null,studentSelection,studentSelectionArg,null,null,null,null)
@@ -417,6 +413,9 @@ class DBHelper(private val context: Context):
                         )
                     )
                     if (studentBookCount > 0) {
+                        val values = ContentValues()
+                        values.put(BOOK_COLUMN_STATUS, "Available")
+                        val updateBookCursor = dbWrite.update(BOOK_TABLE_NAME, values, selection, selectionArguments)
                         val updatedStudentReservedBooks = studentReservedBooks.replace(",$bid", "")
                         val studentValuesBook = ContentValues()
                         studentValuesBook.put(STUDENT_COLUMN_RESERVEDBOOKS, updatedStudentReservedBooks)
