@@ -13,7 +13,7 @@ The Library Management System (LMS) is a software application designed to automa
 ### For Admins
 - **Administrative Access:** Log in to access administrative functionalities. 
 - **Book Management:** Add, remove, and view the list of available books. 
-- **Book Transactions:** Issue books to students and process returns.
+- **Book Transactions:** Issue books to students.
 ### For Students
 - **User Authentication:** Log in with credentials to access student functionalities.
 - **Book Browsing:** View the list of available books in the library.
@@ -27,16 +27,16 @@ The Library Management System (LMS) is a software application designed to automa
 
 ### Backend Logic
 - Implemented in Kotlin, handling business logic, data validation, and database operations.
-- Manages book records, user records, borrowing history, and updates availability status.
+- Manages book records, user records, borrowing, and updates availability status.
 
 ### Data Storage
 - Utilizes SQLite database for storing book records, user records, borrowing history, etc.
-- Tables include books, users, borrowed_books, fines, etc.
+- Tables include books, users, borrowed_books, etc.
 
 ### Database Structure
 The SQLite database consists of three tables:
 1. Admin: Stores information about administrators (admin_id, username, password).
-2. Student: Stores information about students (student_id, username, ).
+2. Student: Stores information about students (student_id, username ).
 3. Books: Stores information about books (book_id, title, author,type, availability).
 
 ## Dependencies
