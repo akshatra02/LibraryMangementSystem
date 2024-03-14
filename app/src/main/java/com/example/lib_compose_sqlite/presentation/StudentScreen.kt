@@ -377,7 +377,7 @@ fun ReturnBookScreen(navController: NavController,context: Context,studentId: In
                                     }
                                 }
 
-                                else -> Toast.makeText(context, "Error....!", Toast.LENGTH_LONG).show()
+                                else -> Toast.makeText(context, "Failed to return the book. Please try again later.", Toast.LENGTH_LONG).show()
                             }
 
                         }

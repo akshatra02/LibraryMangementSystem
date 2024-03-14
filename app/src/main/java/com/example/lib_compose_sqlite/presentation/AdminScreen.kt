@@ -293,6 +293,10 @@ fun IssueBookScreen(navController: NavController,context:Context){
 
                             val issue_book = dbHelper.issuebook(bookId.toInt(), studentId.toInt())
                             when (issue_book) {
+                                -1 -> {
+                                    Toast.makeText(context, "Failed to issue the book. Please try again later.", Toast.LENGTH_LONG).show()
+                                    navController.navigate(Screen.AdminScreen.route)
+                                }
 
                                 1 -> {
                                     Toast.makeText(context, "Student's Book limit exceeded!", Toast.LENGTH_LONG).show()
@@ -427,18 +431,6 @@ fun AddBookScreen(navController: NavController, context: Context){
                 val booksTypeList : List<String> = listOf("fiction","biography","historic","magazine","journal")
                 val booksTypePresent = booksTypeList.contains(booksType.lowercase())
                 var addBook:Long
-//                try {
-//                    if (booksTypePresent) {
-//                        val bookType: BookType = BookType.valueOf(booksType)
-//                        val newBook = Book(bookId.toInt(), booksTitle, booksAuthor, bookType, booksStatus)
-//                        addBook = dbHelper.addbook(newBook)
-//                    } else {
-//                        addBook = -1
-//                    }
-//                }
-//                catch (e : NumberFormatException){
-//                    return -1
-//                }
                 Button(
                     onClick = {
                         try {

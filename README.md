@@ -1,5 +1,5 @@
 
-# Zoho Library Management System
+# Library Management System 📚
 
 ## Overview
 The Library Management System (LMS) is a software application designed to automate library operations, including book management and user interactions. It serves both administrators and students, providing features such as browsing books, borrowing books, and managing reservations. The system is built using Kotlin programming language, Jetpack Compose for UI development, and SQLite for data storage.
@@ -64,10 +64,9 @@ The SQLite database consists of three tables:
   
   
 ## Welcome Page
-- The welcome screen serves as the initial interface for accessing the Library Management System (LMS) application. It offers convenient access for both administrators and students through separate login portals.
-  
-![Home Screen](app/images/HomeScreen.png)
-![Admin Login](app/images/AdminLogin.png)
+- The welcome screen serves as the initial interface for accessing the Library Management System (LMS) application. It offers convenient access for both administrators and students through separate login portals. 
+    ![Home Screen](app/images/HomeScreen.png)
+    ![Admin Login](app/images/AdminLogin.png)
 
 
 ## Admin Page
@@ -86,7 +85,7 @@ The SQLite database consists of three tables:
 3. **Remove Books**:
     - Provides functionality to remove existing books from the library inventory.
     - Administrators can select books to be removed based on book ID.
-![Admin Screen](app/images/AdminScreen.png)
+      ![Admin Screen](app/images/AdminScreen.png)
       ![All books](app/images/AllBooks.png)
       ![Add Book](app/images/AddBook.png)
 
