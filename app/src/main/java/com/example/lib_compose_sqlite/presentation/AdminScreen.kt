@@ -64,7 +64,6 @@ fun AdminScreen(navController: NavController) {
                     .fillMaxWidth()
                     .fillMaxSize()
                     .padding(values),
-//                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Card(
                     modifier = Modifier

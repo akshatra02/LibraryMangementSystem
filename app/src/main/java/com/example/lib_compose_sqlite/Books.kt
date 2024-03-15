@@ -7,4 +7,4 @@ enum class BookStatus{
 enum class BookType{
     Fiction,Biography,Historic,Magazine,Journal
 }
-data class Book(val bookId:Int, val title: String, val author: String, val bookType: BookType, var status: BookStatus = BookStatus.Available)
+data class Book(val bookId:Int, val title: String, val author: String, val bookType: BookType, val status: BookStatus)

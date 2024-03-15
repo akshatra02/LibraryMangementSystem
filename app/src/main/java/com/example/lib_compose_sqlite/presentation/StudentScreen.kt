@@ -57,7 +57,6 @@ fun StudentScreen(navController: NavController ,studentId:Int){
                     .fillMaxWidth()
                     .fillMaxSize()
                     .padding(values),
-//                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Card(
                     modifier = Modifier
