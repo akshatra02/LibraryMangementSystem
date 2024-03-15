@@ -164,9 +164,10 @@ fun StudentBooksScreen(navController: NavController, context: Context,studentId:
                     if (booksSize > 0) {
 //                        delay(3000)
                         items(booksSize) {
-                            val book = viewBooks.get(it)
+                            val book = viewBooks[it]
+                            val (id,title,author,bookType,status)=book
                             val bookStatus: String
-                            if (book.status == BookStatus.Available) {
+                            if (status == BookStatus.Available) {
                                 bookStatus = " \uD83D\uDFE2 ${book.status}"
                             } else {
                                 bookStatus = " \uD83D\uDD34 ${book.status}"
@@ -176,11 +177,11 @@ fun StudentBooksScreen(navController: NavController, context: Context,studentId:
                                     .fillMaxWidth()
                             ) {
                                 Text(
-                                    text = "${book.bookId} - ${book.title}",
+                                    text = "${id} - ${title}",
                                     style = TextStyle(fontSize = 24.sp)
                                 )
                                 Text(
-                                    text = "Author: ${book.author} - Type: ${book.bookType} "
+                                    text = "Author: ${author} - Type: ${bookType} "
                                 )
 
                                 Text(
@@ -249,9 +250,10 @@ fun StudentMyBookScreen(navController: NavController,context: Context,studentId:
                     val booksSize = viewBooks.size
                     if (booksSize > 0) {
                         items(booksSize) {
-                            val book = viewBooks.get(it)
+                            val book = viewBooks[it]
+                            val (bookId,title,author,bookType,status) = book
                             val bookStatus: String
-                            if (book.status == BookStatus.Available) {
+                            if (status == BookStatus.Available) {
                                 bookStatus = " \uD83D\uDFE2 ${book.status}"
                             } else {
                                 bookStatus = " \uD83D\uDD34 ${book.status}"
@@ -261,11 +263,11 @@ fun StudentMyBookScreen(navController: NavController,context: Context,studentId:
                                     .fillMaxWidth()
                             ) {
                                 Text(
-                                    text = "${book.bookId} - ${book.title}",
+                                    text = "${bookId} - ${title}",
                                     style = TextStyle(fontSize = 24.sp)
                                 )
                                 Text(
-                                    text = "Author: ${book.author} - Type: ${book.bookType} "
+                                    text = "Author: ${author} - Type: ${bookType} "
                                 )
 
                                 Text(

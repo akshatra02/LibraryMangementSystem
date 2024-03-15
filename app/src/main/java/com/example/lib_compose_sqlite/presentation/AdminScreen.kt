@@ -186,9 +186,10 @@ fun BooksScreen(navController: NavController,context: Context) {
                         val booksSize = viewBooks.size
                         if (booksSize > 0) {
                             items(booksSize) {
-                                val book = viewBooks.get(it)
+                                val book = viewBooks[it]
+                                val (bookId,title,author,bookType,status) = book
                                 val booksStatus: String
-                                if (book.status == BookStatus.Available) {
+                                if (status == BookStatus.Available) {
                                     booksStatus = " \uD83D\uDFE2 ${book.status}"
                                 } else {
                                     booksStatus = " \uD83D\uDD34 ${book.status}"
@@ -198,11 +199,11 @@ fun BooksScreen(navController: NavController,context: Context) {
                                         .fillMaxWidth()
                                 ) {
                                     Text(
-                                        text = "${book.bookId} - ${book.title}",
+                                        text = "${bookId} - ${title}",
                                         style = TextStyle(fontSize = 24.sp)
                                     )
                                     Text(
-                                        text = "Author: ${book.author} - Type: ${book.bookType} "
+                                        text = "Author: ${author} - Type: ${bookType} "
                                     )
 
                                     Text(
