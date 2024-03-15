@@ -304,7 +304,6 @@ fun AdminLoginScreen(navController: NavController,context: Context){
                         navController.navigate(Screen.AdminSignupScreen.route)
                     },
                     style = TextStyle(fontSize = 20.sp)
-
                 )
             }
         }

@@ -5,16 +5,17 @@
 The Library Management System (LMS) is a software application designed to automate library operations, including book management and user interactions. It serves both administrators and students, providing features such as browsing books, borrowing books, and managing reservations. The system is built using Kotlin programming language, Jetpack Compose for UI development, and SQLite for data storage.
 
 ## Technologies Used
-- **Kotlin**: Main programming language for backend logic and business logic implementation.
-- **Jetpack Compose**: Modern UI toolkit for building native Android apps with declarative UI.
-- **SQLite**: Lightweight relational database management system for local data storage.
+- `Kotlin`: Main programming language for backend logic and business logic implementation.
+- `Jetpack Compose`: Modern UI toolkit for building native Android apps with declarative UI.
+- `SQLite`: Lightweight relational database management system for local data storage.
 
 ## Functionality
-### For Admins
+> For Admins
 - **Administrative Access:** Log in to access administrative functionalities. 
 - **Book Management:** Add, remove, and view the list of available books. 
 - **Book Transactions:** Issue books to students.
-### For Students
+
+> For Students
 - **User Authentication:** Log in with credentials to access student functionalities.
 - **Book Browsing:** View the list of available books in the library.
 - **View Reserved Books:** Access and view their own reserved books.

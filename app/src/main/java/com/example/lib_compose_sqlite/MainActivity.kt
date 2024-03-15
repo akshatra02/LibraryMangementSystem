@@ -29,8 +29,7 @@ class MainActivity : ComponentActivity() {
             LIB_COMPOSE_SQLITETheme {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                    val navController = rememberNavController()
-                    Navigation(navController)
+                    Navigation()
                 }
             }
         }
@@ -38,9 +37,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Navigation(
-    navController: NavController
-){
+fun Navigation(){
     val navController = rememberNavController()
 
     NavHost(
