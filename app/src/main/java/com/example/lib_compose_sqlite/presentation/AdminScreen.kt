@@ -25,7 +25,7 @@ import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.lib_compose_sqlite.Book
-import com.example.lib_compose_sqlite.BookStatus
+//import com.example.lib_compose_sqlite.BookStatus
 import com.example.lib_compose_sqlite.BookType
 import com.example.lib_compose_sqlite.data.DBHelper
 import com.example.lib_compose_sqlite.ui.theme.LIB_COMPOSE_SQLITETheme
@@ -189,10 +189,10 @@ fun BooksScreen(navController: NavController,context: Context) {
                                 val book = viewBooks[it]
                                 val (bookId,title,author,bookType,status) = book
                                 val booksStatus: String
-                                if (status == BookStatus.Available) {
-                                    booksStatus = " \uD83D\uDFE2 ${book.status}"
+                                if (status == 0) {
+                                    booksStatus = " \uD83D\uDFE2 Available"
                                 } else {
-                                    booksStatus = " \uD83D\uDD34 ${book.status}"
+                                    booksStatus = " \uD83D\uDD34 Reserved"
                                 }
                                 Card(
                                     modifier = Modifier
@@ -364,8 +364,6 @@ fun AddBookScreen(navController: NavController, context: Context){
     var booksType by remember {
         mutableStateOf("")
     }
-    val booksStatusValue = "Available"
-    val booksStatus:BookStatus = BookStatus.valueOf(booksStatusValue)
     LIB_COMPOSE_SQLITETheme {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
@@ -435,31 +433,25 @@ fun AddBookScreen(navController: NavController, context: Context){
                             if (booksTypePresent) {
                                 val booksTypeEntered = booksType.replaceFirstChar { it -> it.uppercaseChar() }
                                 val bookType: BookType = BookType.valueOf(booksTypeEntered)
-                                val newBook = Book(bookId.toInt(), booksTitle, booksAuthor, bookType, booksStatus)
+                                val newBook = Book(bookId.toInt(), booksTitle, booksAuthor, bookType, 0)
                                 addBook = dbHelper.addbook(newBook)
                             } else {
                                 addBook = 0L
                             }
-                            when(addBook){
-                                0L -> Toast.makeText(context, "Sorry there is an issue! Kindly check the inputs.", Toast.LENGTH_LONG).show()
+                            when (addBook) {
+                                0L -> Toast.makeText(
+                                    context,
+                                    "Sorry there is an issue! Kindly check the inputs.",
+                                    Toast.LENGTH_LONG
+                                ).show()
+
                                 -1L -> Toast.makeText(context, "Book ID already exixts.", Toast.LENGTH_LONG).show()
-                                else ->{Toast.makeText(context, "Book - $booksTitle added successfully!", Toast.LENGTH_LONG)
-                                    .show()
-                                    navController.navigate(Screen.AdminScreen.route)}
+                                else -> {
+                                    Toast.makeText(context, "Book - $booksTitle added successfully!", Toast.LENGTH_LONG)
+                                        .show()
+                                    navController.navigate(Screen.AdminScreen.route)
+                                }
                             }
-//                            if (addBook > 0) {
-//                                Toast.makeText(context, "Book - $booksTitle added successfully!", Toast.LENGTH_LONG)
-//                                    .show()
-//                                navController.navigate(Screen.AdminScreen.route)
-//                            }
-//                            else {
-//                                Toast.makeText(
-//                                    context,
-//                                    "Sorry there is an issue! Kindly check the inputs.",
-//                                    Toast.LENGTH_LONG
-//                                ).show()
-////                            navController.navigate(Screen.AddBookScreen.route)
-//                            }
                         }
                         catch (e: NumberFormatException){
                             Toast.makeText(

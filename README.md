@@ -66,8 +66,9 @@ The SQLite database consists of three tables:
   
 ## Welcome Page
 - The welcome screen serves as the initial interface for accessing the Library Management System (LMS) application. It offers convenient access for both administrators and students through separate login portals. 
-    ![Home Screen](app/images/HomeScreen.png)
-    ![Admin Login](app/images/AdminLogin.png)
+    
+![Home Screen](app/images/HomeScreen.png)
+![Admin Login](app/images/AdminLogin.png)
 
 
 ## Admin Page
@@ -86,9 +87,10 @@ The SQLite database consists of three tables:
 3. **Remove Books**:
     - Provides functionality to remove existing books from the library inventory.
     - Administrators can select books to be removed based on book ID.
-      ![Admin Screen](app/images/AdminScreen.png)
-      ![All books](app/images/AllBooks.png)
-      ![Add Book](app/images/AddBook.png)
+      
+![Admin Screen](app/images/AdminScreen.png) 
+![All books](app/images/AllBooks.png)
+![Add Book](app/images/AddBook.png)
 
 ## Student Page
 1. **View Books**:
@@ -102,9 +104,8 @@ The SQLite database consists of three tables:
 3. **Return Book**:
     - Allows students to return borrowed books to the library.
     - Requires input of book ID and updates book availability status accordingly.
-
-      ![Student Page](app/images/StudentPage.png)
-      ![Student Reserved books](app/images/StudentReservedBooks.png)
+![Student Page](app/images/StudentPage.png)
+![Student Reserved books](app/images/StudentReservedBooks.png)
 ## Conclusion
 The Library Management System (LMS) simplifies library operations, enhances user experience, and improves efficiency for administrators and students alike. Leveraging Kotlin, Jetpack Compose, and SQLite, the system offers a modern and robust solution for managing library resources effectively.
 

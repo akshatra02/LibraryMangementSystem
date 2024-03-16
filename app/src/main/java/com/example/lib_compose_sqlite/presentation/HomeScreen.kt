@@ -23,6 +23,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navArgument
 import com.example.lib_compose_sqlite.Admin
+import com.example.lib_compose_sqlite.Person
 import com.example.lib_compose_sqlite.Student
 import com.example.lib_compose_sqlite.data.DBHelper
 import com.example.lib_compose_sqlite.ui.theme.LIB_COMPOSE_SQLITETheme
@@ -74,9 +75,6 @@ fun HomeScreen(navController:NavController) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdminSignupScreen(navController: NavController,context: Context) {
-    var adminId by remember {
-        mutableStateOf("")
-    }
     var adminName by remember {
         mutableStateOf("")
     }
@@ -116,16 +114,6 @@ fun AdminSignupScreen(navController: NavController,context: Context) {
             val dbhelper = DBHelper(context)
             Text(text = "ADMIN SIGN UP PAGE")
             Spacer(modifier = Modifier.height(20.dp))
-            Text(text = "ID")
-            TextField(
-                value = adminId, onValueChange = {
-                    adminId = it
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
-            Spacer(modifier = Modifier.height(20.dp))
-
             Text(text = "Name")
             TextField(
                 value = adminName, onValueChange = {
@@ -149,13 +137,20 @@ fun AdminSignupScreen(navController: NavController,context: Context) {
             Button(
                 onClick = {
                     try {
-                        val admin = Admin(adminId.toInt(), adminName, adminPassword)
-                        if (dbhelper.addAdmin(admin) > 0) {
+                        val admin = Person(adminName, adminPassword)
+                        val addAdmin = dbhelper.addAdmin(admin)
+                        if (addAdmin > 0) {
                             navController.navigate(Screen.AdminLoginScreen.route) {
                                 popUpTo(Screen.AdminLoginScreen.route) {
                                     inclusive = true
                                 }
                             }
+                            Toast.makeText(
+                                context,
+                                "Admin - $addAdmin Signed Up successfully!",
+                                Toast.LENGTH_LONG
+                            )
+                                .show()
                         } else {
                             Toast.makeText(
                                 context,
@@ -261,24 +256,30 @@ fun AdminLoginScreen(navController: NavController,context: Context){
                     onClick = {
                         try {
                             val admin = Admin(adminId.toInt(), adminName, adminPassword)
-                            if (adminName == "" || adminPassword == "") {
-                                Toast.makeText(
-                                    context,
-                                    "Please provide both your name and password.",
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            } else if (dbhelper.loginadmin(admin)) {
-                                Toast.makeText(context, "Welcome $adminName", Toast.LENGTH_LONG).show()
+                            when {
+                                (adminName == "" || adminPassword == "") -> {
+                                    Toast.makeText(
+                                        context,
+                                        "Please provide both your name and password.",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                }
 
-                                navController.navigate(Screen.AdminScreen.route)
-                            } else {
-                                Toast.makeText(
-                                    context,
-                                    "Invalid login credentials.",
-                                    Toast.LENGTH_LONG
-                                )
-                                    .show()
+                                (dbhelper.loginadmin(admin)) -> {
+                                    Toast.makeText(context, "Welcome $adminName", Toast.LENGTH_LONG).show()
 
+                                    navController.navigate(Screen.AdminScreen.route)
+                                }
+
+                                else -> {
+                                    Toast.makeText(
+                                        context,
+                                        "Invalid login credentials.",
+                                        Toast.LENGTH_LONG
+                                    )
+                                        .show()
+
+                                }
                             }
                         }
                         catch (e : NumberFormatException){
@@ -303,7 +304,7 @@ fun AdminLoginScreen(navController: NavController,context: Context){
                     onClick = { offset ->
                         navController.navigate(Screen.AdminSignupScreen.route)
                     },
-                    style = TextStyle(fontSize = 20.sp)
+                    style = TextStyle(fontSize = 20.sp, color = MaterialTheme.colorScheme.secondary)
                 )
             }
         }
@@ -313,10 +314,10 @@ fun AdminLoginScreen(navController: NavController,context: Context){
 @Composable
 fun StudentSignupScreen(navController: NavController,context: Context)
 {
-    var studentId by remember {
+    var studentName by remember {
         mutableStateOf("")
     }
-    var studentName by remember {
+    var studentPassword by remember{
         mutableStateOf("")
     }
     LIB_COMPOSE_SQLITETheme {
@@ -353,16 +354,6 @@ fun StudentSignupScreen(navController: NavController,context: Context)
                 Text(text = "STUDENT SIGN UP PAGE")
                 Spacer(modifier = Modifier.height(20.dp))
 
-                Text(text = "Student ID")
-                TextField(
-                    value = studentId, onValueChange = {
-                        studentId = it
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(20.dp))
-
                 Text(text = "Student Name")
                 TextField(
                     value = studentName, onValueChange = {
@@ -371,17 +362,25 @@ fun StudentSignupScreen(navController: NavController,context: Context)
                     modifier = Modifier
                         .fillMaxWidth()
                 )
+
+                Text(text = "Student Password")
+                TextField(
+                    value = studentPassword, onValueChange = {
+                        studentPassword = it
+                    }
+                )
                 Spacer(modifier = Modifier.height(20.dp))
                 Button(
                     onClick = {
 
                         try {
-                            val student = Student(studentId.toInt(), studentName)
-                            if (studentId==""|| studentName=="" ){
-                                Toast.makeText(context, "Please enter your name.", Toast.LENGTH_LONG).show()
+                            val student = Person(studentName, studentPassword)
+                            if (studentPassword==""|| studentName=="" ){
+                                Toast.makeText(context, "Please enter both name and password .", Toast.LENGTH_LONG).show()
                             }
-                            else if (dbhelper.addStudent(student) > 0) {
-                                Toast.makeText(context, "Signup Successfull",Toast.LENGTH_LONG).show()
+                            val addStudent = dbhelper.addStudent(student)
+                            if (addStudent > 0) {
+                                Toast.makeText(context, "Student - $addStudent Signup Successfull",Toast.LENGTH_LONG).show()
                                 navController.navigate(Screen.StudentLoginScreen.route) {
                                     popUpTo(Screen.HomeScreen.route) {
                                         inclusive = true
@@ -422,6 +421,9 @@ fun StudentLoginScreen(navController: NavController,context: Context) {
         mutableStateOf("")
     }
     var studentName by remember {
+        mutableStateOf("")
+    }
+    var studentPassword by remember {
         mutableStateOf("")
     }
     LIB_COMPOSE_SQLITETheme {
@@ -476,12 +478,20 @@ fun StudentLoginScreen(navController: NavController,context: Context) {
                     modifier = Modifier
                         .fillMaxWidth()
                 )
+                Text(text = "Student Password")
+                TextField(
+                    value = studentPassword, onValueChange = {
+                        studentPassword = it
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
                 Spacer(modifier = Modifier.height(20.dp))
 
                 Button(
                     onClick = {
                         try {
-                            val student = Student(studentId.toInt(), studentName)
+                            val student = Student(studentId.toInt(), studentName,studentPassword)
                             val studentIdLogin = dbhelper.loginstudent(student)
                             if(studentName==""){
                                 Toast.makeText(
@@ -530,7 +540,7 @@ fun StudentLoginScreen(navController: NavController,context: Context) {
                     onClick = { offset ->
                         navController.navigate(Screen.StudentSignupScreen.route)
                     },
-                    style = TextStyle(fontSize = 20.sp)
+                    style = TextStyle(fontSize = 20.sp, color = MaterialTheme.colorScheme.secondary)
 
                 )
             }

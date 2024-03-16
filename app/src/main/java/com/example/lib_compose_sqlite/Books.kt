@@ -1,10 +1,20 @@
 package com.example.lib_compose_sqlite
 
 
-enum class BookStatus{
-    Available,Reserved
-}
+//enum class BookStatus{
+//    Available,Reserved
+//}
 enum class BookType{
-    Fiction,Biography,Historic,Magazine,Journal
+    Fiction,
+    Biography,
+    Historic,
+    Magazine,
+    Journal,
 }
-data class Book(val bookId:Int, val title: String, val author: String, val bookType: BookType, val status: BookStatus)
+data class Book(
+    val bookId: Int,
+    val title: String,
+    val author: String,
+    val bookType: BookType,
+    val reservedStudentId: Int,
+)

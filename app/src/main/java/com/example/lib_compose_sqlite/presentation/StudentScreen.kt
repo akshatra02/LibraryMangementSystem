@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.lib_compose_sqlite.BookStatus
+//import com.example.lib_compose_sqlite.BookStatus
 import com.example.lib_compose_sqlite.data.DBHelper
 import com.example.lib_compose_sqlite.ui.theme.LIB_COMPOSE_SQLITETheme
 import kotlinx.coroutines.GlobalScope
@@ -167,10 +167,10 @@ fun StudentBooksScreen(navController: NavController, context: Context,studentId:
                             val book = viewBooks[it]
                             val (id,title,author,bookType,status)=book
                             val bookStatus: String
-                            if (status == BookStatus.Available) {
-                                bookStatus = " \uD83D\uDFE2 ${book.status}"
+                            if (status == 0) {
+                                bookStatus = " \uD83D\uDFE2 Available"
                             } else {
-                                bookStatus = " \uD83D\uDD34 ${book.status}"
+                                bookStatus = " \uD83D\uDD34 Reserved"
                             }
                             Card(
                                 modifier = Modifier
@@ -253,10 +253,10 @@ fun StudentMyBookScreen(navController: NavController,context: Context,studentId:
                             val book = viewBooks[it]
                             val (bookId,title,author,bookType,status) = book
                             val bookStatus: String
-                            if (status == BookStatus.Available) {
-                                bookStatus = " \uD83D\uDFE2 ${book.status}"
+                            if (status == 0) {
+                                bookStatus = " \uD83D\uDFE2 Available"
                             } else {
-                                bookStatus = " \uD83D\uDD34 ${book.status}"
+                                bookStatus = " \uD83D\uDD34 Reserved"
                             }
                             Card(
                                 modifier = Modifier
