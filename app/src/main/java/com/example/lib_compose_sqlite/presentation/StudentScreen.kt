@@ -20,6 +20,7 @@ import com.example.lib_compose_sqlite.BookReturnStatus
 //import com.example.lib_compose_sqlite.BookStatus
 import com.example.lib_compose_sqlite.data.DBHelper
 import com.example.lib_compose_sqlite.ui.theme.LIB_COMPOSE_SQLITETheme
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -148,7 +149,7 @@ fun StudentBooksScreen(navController: NavController, context: Context,studentId:
                     }
                 )
             }
-        ){values ->
+        ) { values ->
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -156,53 +157,54 @@ fun StudentBooksScreen(navController: NavController, context: Context,studentId:
             ) {
                 runBlocking {
                     val dbHelper = DBHelper(context)
-                    val viewBooks = dbHelper.getBooks()
-                    val booksSize = viewBooks.size
-                    if (booksSize > 0) {
+                    dbHelper.getBooks().collect { viewBooks ->
+                        val booksSize = viewBooks.size
+                        if (booksSize > 0) {
 //                        delay(3000)
-                        items(booksSize) {
-                            val book = viewBooks[it]
-                            val (id,title,author,bookType,status)=book
-                            val bookStatus  =
-                                if (status == 0) "\uD83D\uDFE2 Available" else  "\uD83D\uDD34 Reserved"
+                            items(booksSize) {
+                                val book = viewBooks[it]
+                                val (id, title, author, bookType, status) = book
+                                val bookStatus =
+                                    if (status == 0) "\uD83D\uDFE2 Available" else "\uD83D\uDD34 Reserved"
 
-                            Card(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                            ) {
-                                Text(
-                                    text = "${id} - ${title}",
-                                    style = TextStyle(fontSize = 24.sp)
-                                )
-                                Text(
-                                    text = "Author: ${author} - Type: ${bookType} "
-                                )
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                ) {
+                                    Text(
+                                        text = "${id} - ${title}",
+                                        style = TextStyle(fontSize = 24.sp)
+                                    )
+                                    Text(
+                                        text = "Author: ${author} - Type: ${bookType} "
+                                    )
 
-                                Text(
-                                    text = bookStatus
+                                    Text(
+                                        text = bookStatus
 
-                                )
+                                    )
+                                    Spacer(modifier = Modifier.height(20.dp))
+                                }
+
                                 Spacer(modifier = Modifier.height(20.dp))
-                            }
 
-                            Spacer(modifier = Modifier.height(20.dp))
-
-                        }
-                    } else {
-                        items(1) {
-                            Card(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(30.dp)
-                            ) {
-                                Text(
-                                    text = "No books are in the Library.",
-                                    style = TextStyle(fontSize = 24.sp)
-                                )
                             }
+                }else{
+                    items(1) {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(30.dp)
+                        ) {
+                            Text(
+                                text = "No books are in the Library.",
+                                style = TextStyle(fontSize = 24.sp)
+                            )
                         }
                     }
                 }
+            }
+             }
             }
         }
     }
@@ -210,6 +212,7 @@ fun StudentBooksScreen(navController: NavController, context: Context,studentId:
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StudentMyBookScreen(navController: NavController,context: Context,studentId: Int) {
+    val dbHelper = DBHelper(context)
     LIB_COMPOSE_SQLITETheme {
         Scaffold(
             topBar = {
@@ -239,48 +242,44 @@ fun StudentMyBookScreen(navController: NavController,context: Context,studentId:
                     .padding(values),
             ) {
                 runBlocking {
-                    val dbHelper = DBHelper(context)
-                    val viewBooks = dbHelper.getStudentMyBook(studentId).collect{viewBooks ->
-                    val booksSize = viewBooks.size
-                    if (booksSize > 0) {
-                        items(booksSize) {
-                            val book = viewBooks[it]
-                            val (bookId,title,author,bookType,status) = book
-                            val bookStatus  =
-                                if (status == 0) "\uD83D\uDFE2 Available" else  "\uD83D\uDD34 Reserved"
-
-                            Card(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                            ) {
-                                Text(
-                                    text = "${bookId} - ${title}",
-                                    style = TextStyle(fontSize = 24.sp)
-                                )
-                                Text(
-                                    text = "Author: ${author} - Type: ${bookType} "
-                                )
-
-                                Text(
-                                    text = bookStatus
-
-                                )
+                    dbHelper.getStudentMyBook(studentId).collect { viewBooks ->
+                        val booksSize = viewBooks.size
+                        if (booksSize > 0) {
+                            items(booksSize) {
+                                val book = viewBooks[it]
+                                val (bookId, title, author, bookType, status) = book
+                                val bookStatus =
+                                    if (status == 0) "\uD83D\uDFE2 Available" else "\uD83D\uDD34 Reserved"
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                ) {
+                                    Text(
+                                        text = "${bookId} $booksSize- ${title}",
+                                        style = TextStyle(fontSize = 24.sp)
+                                    )
+                                    Text(
+                                        text = "Author: ${author} - Type: ${bookType} "
+                                    )
+                                    Text(
+                                        text = bookStatus
+                                    )
+                                    Spacer(modifier = Modifier.height(20.dp))
+                                }
                                 Spacer(modifier = Modifier.height(20.dp))
                             }
-                            Spacer(modifier = Modifier.height(20.dp))
-
-                        }
-                    } else {
-                        items(1) {
-                            Card(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(30.dp)
-                            ) {
-                                Text(
-                                    text = "No books are reserved yet!",
-                                    style = TextStyle(fontSize = 24.sp)
-                                )
+                        }else {
+                            items(1) {
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(30.dp)
+                                ) {
+                                    Text(
+                                        text = "No books are reserved yet!",
+                                        style = TextStyle(fontSize = 24.sp)
+                                    )
+                                }
                             }
                         }
                     }
@@ -289,7 +288,7 @@ fun StudentMyBookScreen(navController: NavController,context: Context,studentId:
         }
     }
 }
-}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -297,6 +296,7 @@ fun ReturnBookScreen(navController: NavController,context: Context,studentId: In
     var bookid by remember{
         mutableStateOf("")
     }
+    val coroutineScope = rememberCoroutineScope()
     LIB_COMPOSE_SQLITETheme {
         Scaffold(
             topBar = {
@@ -339,13 +339,16 @@ fun ReturnBookScreen(navController: NavController,context: Context,studentId: In
                 )
                 Button(
                     onClick = {
-                        val dbHelper = DBHelper(context)
+                        coroutineScope.launch {
+                            val dbHelper = DBHelper(context)
 //                        try {
+
                             val returnbook = dbHelper.returnBook(bookid.toInt(), studentId)
                             when (returnbook) {
                                 BookReturnStatus.WrongBookId -> {
                                     Toast.makeText(context, "Entered Wrong Book Id.", Toast.LENGTH_LONG).show()
                                 }
+
                                 BookReturnStatus.Successful -> {
                                     Toast.makeText(
                                         context,
@@ -356,7 +359,8 @@ fun ReturnBookScreen(navController: NavController,context: Context,studentId: In
                                         popUpTo("${Screen.StudentScreen.route}/$studentId")
                                     }
                                 }
-                                BookReturnStatus.NoBookReserved ->{
+
+                                BookReturnStatus.NoBookReserved -> {
                                     Toast.makeText(
                                         context,
                                         "No books are reserved to return!",
@@ -366,7 +370,12 @@ fun ReturnBookScreen(navController: NavController,context: Context,studentId: In
                                         popUpTo("${Screen.StudentScreen.route}/$studentId")
                                     }
                                 }
-                                BookReturnStatus.Failed-> Toast.makeText(context, "Failed to return the book. Please try again later.", Toast.LENGTH_LONG).show()
+
+                                BookReturnStatus.Failed -> Toast.makeText(
+                                    context,
+                                    "Failed to return the book. Please try again later.",
+                                    Toast.LENGTH_LONG
+                                ).show()
                             }
 
 //                        }
@@ -377,8 +386,8 @@ fun ReturnBookScreen(navController: NavController,context: Context,studentId: In
 //                                Toast.LENGTH_LONG
 //                            ).show()
 //                        }
+                        }
                     }
-
                 )
                 {
                     Text(text = "Return Book")

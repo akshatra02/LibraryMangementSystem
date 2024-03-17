@@ -12,3 +12,8 @@ open class Person(val name :String,val password:String)
   val studentName: String,
   val studentPassword:String
  ):Person(studentName,studentPassword)
+
+enum class Authentication{
+ Success,
+ Failed,
+}

@@ -112,37 +112,38 @@ class DBHelper(private val context: Context):
         onCreate(db)
     }
 
-    fun addAdmin(admin: Person): Long {
+    suspend fun addAdmin(admin: Person): Long = withContext(Dispatchers.IO)  {
         val values = ContentValues().apply {
             put(ADMIN_COLUMN_NAME, admin.name)
             put(ADMIN_COLUMN_PASSWORD,admin.password)
         }
         val db = writableDatabase
-        return db.insert(ADMIN_TABLE_NAME, null, values)
+        val addAdmin = db.insert(ADMIN_TABLE_NAME, null, values)
+        return@withContext addAdmin
     }
 
-    fun loginAdmin(admin: Admin): Boolean {
-        val db = this.readableDatabase
+    suspend fun loginAdmin(admin: Admin): Boolean = withContext(Dispatchers.IO) {
+        val db = readableDatabase
         val selection = "$ADMIN_COLUMN_ID =?  AND $ADMIN_COLUMN_PASSWORD =?"
         val selectionArgs = arrayOf(admin.adminId.toString(), admin.adminPassword)
         val cursor = db.query(false, ADMIN_TABLE_NAME, null, selection, selectionArgs, null, null, null, null, null)
         val userExists = cursor.count > 0
         cursor.close()
-        return userExists
+        return@withContext userExists
     }
 
-    fun addStudent(student: Person): Long {
+   suspend fun addStudent(student: Person): Long= withContext(Dispatchers.IO) {
         val values = ContentValues().apply {
             put(STUDENT_COLUMN_NAME, student.name)
             put(STUDENT_COLUMN_PASSWORD, student.password)
             put(STUDENT_COLUMN_RESERVEDBOOKS_COUNT, 0)
         }
         val db = writableDatabase
-        return db.insert(STUDENT_TABLE_NAME, null, values)
+       return@withContext db.insert(STUDENT_TABLE_NAME, null, values)
     }
 
-    fun loginStudent(student: Student): Int {
-        val db = this.readableDatabase
+    suspend fun loginStudent(student: Student): Int = withContext(Dispatchers.IO) {
+        val db = readableDatabase
         val selection = "$STUDENT_COLUMN_ID =? AND $STUDENT_COLUMN_PASSWORD =?"
         val selectionArg =
             arrayOf(student.studentId.toString(), student.studentPassword)
@@ -150,12 +151,12 @@ class DBHelper(private val context: Context):
         if (cursor.count > 0) {
             val studentId = student.studentId
             cursor.close()
-            return studentId
+            return@withContext studentId
         }
-        return 0
+        return@withContext 0
     }
 
-    suspend fun getBooks(): List<Book> = withContext(Dispatchers.IO) {
+    suspend fun getBooks(): Flow<List<Book>> = flow {
         try {
             val db = readableDatabase
             val bookList = mutableListOf<Book>()
@@ -174,16 +175,16 @@ class DBHelper(private val context: Context):
             }
             cursor.close()
             db.close()
-            return@withContext bookList
+            emit(bookList)
         } catch (e: SQLiteConstraintException) {
-            return@withContext emptyList<Book>()
+            emit(emptyList())
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
-    fun issueBook(bid: Int, student_id: Int): BookIssueStatus {
+    suspend fun issueBook(bid: Int, student_id: Int): BookIssueStatus = withContext(Dispatchers.IO) {
         try {
-            val dbRead = this.readableDatabase
-            val dbWrite = this.writableDatabase
+            val dbRead = readableDatabase
+            val dbWrite = writableDatabase
             val selection = "$BOOK_COLUMN_ID =?"
             val selectionArgs = arrayOf(bid.toString())
             val bookCursor =
@@ -216,7 +217,7 @@ class DBHelper(private val context: Context):
                             dbWrite.close()
                             studentCursor.close()
                             bookCursor.close()
-                            return BookIssueStatus.StudentLimitExceeded
+                            return@withContext BookIssueStatus.StudentLimitExceeded
                         } else {
                             studentBookLimit++
                             val bookStatusValues = ContentValues().apply {
@@ -246,7 +247,7 @@ class DBHelper(private val context: Context):
                             dbWrite.close()
                             studentCursor.close()
                             bookCursor.close()
-                            return BookIssueStatus.Successful
+                            return@withContext BookIssueStatus.Successful
                         }
                     }
                     else {
@@ -254,50 +255,50 @@ class DBHelper(private val context: Context):
                         dbRead.close()
                         dbWrite.close()
                         bookCursor.close()
-                        return BookIssueStatus.InvalidInput
+                        return@withContext BookIssueStatus.InvalidInput
                     }
                 }
                 else{
                     dbRead.close()
                     dbWrite.close()
                     bookCursor.close()
-                    return BookIssueStatus.AlreadyReserved
+                    return@withContext BookIssueStatus.AlreadyReserved
                 }
             } else {
                 dbRead.close()
                 dbWrite.close()
                 bookCursor.close()
-                return BookIssueStatus.InvalidInput
+                return@withContext BookIssueStatus.InvalidInput
             }
         }
         catch (e: SQLiteConstraintException) {
-            return BookIssueStatus.Failed
+            return@withContext BookIssueStatus.Failed
         }
     }
 
-    fun addBook(booksTitle:String, booksAuthor:String,bookType:BookType): Long {
+    suspend fun addBook(booksTitle:String, booksAuthor:String,bookType:BookType): Long = withContext(Dispatchers.IO){
         try {
-            val dbWrite = this.writableDatabase
+            val dbWrite = writableDatabase
             val values = ContentValues()
             values.put(BOOK_COLUMN_TITLE,booksTitle)
             values.put(BOOK_COLUMN_AUTHOR,booksAuthor)
             values.put(BOOK_COLUMN_TYPE, bookType.name)
             values.put(RESERVED_STUDENT_ID, 0)
-            return dbWrite.insert(BOOK_TABLE_NAME, null, values)
+            return@withContext dbWrite.insert(BOOK_TABLE_NAME, null, values)
         } catch (e: SQLiteConstraintException) {
-            return 0L
+            return@withContext 0L
         }
 
     }
 
-    fun removeBook(bookid: Int): Boolean {
+   suspend fun removeBook(bookid: Int): Boolean = withContext(Dispatchers.IO) {
         try {
-            val dbWrite = this.writableDatabase
+            val dbWrite = writableDatabase
             val selection = "$BOOK_COLUMN_ID=?"
             val selectionArgs = arrayOf(bookid.toString())
-            return if (dbWrite.delete(BOOK_TABLE_NAME, selection, selectionArgs) > 0) true else false
+            return@withContext if (dbWrite.delete(BOOK_TABLE_NAME, selection, selectionArgs) > 0) true else false
         } catch (e: SQLiteConstraintException) {
-            return false
+            return@withContext false
         }
     }
 
@@ -334,16 +335,16 @@ class DBHelper(private val context: Context):
                 }
             }
             getBooksCursor.close()
-        }catch (e: SQLiteConstraintException) {
+        }catch (e: Exception) {
             Toast.makeText(context, "Failed to retrieve the book. Please try again later.", Toast.LENGTH_LONG).show()
             emit(emptyList())
         }
     }.flowOn(Dispatchers.IO)
 
-    fun returnBook(bid: Int, studentid: Int): BookReturnStatus {
+   suspend fun returnBook(bid: Int, studentid: Int): BookReturnStatus = withContext(Dispatchers.IO){
         try {
-            val dbRead = this.readableDatabase
-            val dbWrite = this.writableDatabase
+            val dbRead = readableDatabase
+            val dbWrite = writableDatabase
             val selection = "$BOOK_COLUMN_ID = ?"
             val selectionArguments = arrayOf(bid.toString())
             val getReturnBookCursor =
@@ -394,14 +395,14 @@ class DBHelper(private val context: Context):
                             getStudent.close()
                             dbWrite.close()
                             dbRead.close()
-                            return BookReturnStatus.Successful
+                            return@withContext BookReturnStatus.Successful
                         }
                         else {
                             getReturnBookCursor.close()
                             getStudent.close()
                             dbWrite.close()
                             dbRead.close()
-                            return BookReturnStatus.Failed
+                            return@withContext BookReturnStatus.Failed
                          }
                     }
                 }
@@ -409,18 +410,18 @@ class DBHelper(private val context: Context):
                     getReturnBookCursor.close()
                     dbWrite.close()
                     dbRead.close()
-                    return BookReturnStatus.NoBookReserved
+                    return@withContext BookReturnStatus.NoBookReserved
                 }
             }
             else{
                 getReturnBookCursor.close()
                 dbWrite.close()
                 dbRead.close()
-                return BookReturnStatus.WrongBookId
+                return@withContext BookReturnStatus.WrongBookId
             }
         }catch (e: SQLiteConstraintException) {
-            return BookReturnStatus.Failed
+            return@withContext BookReturnStatus.Failed
         }
-        return BookReturnStatus.Failed
+       return@withContext BookReturnStatus.Failed
     }
 }

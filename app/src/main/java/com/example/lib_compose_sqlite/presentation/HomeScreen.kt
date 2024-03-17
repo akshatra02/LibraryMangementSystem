@@ -25,10 +25,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navArgument
 import com.example.lib_compose_sqlite.Admin
+import com.example.lib_compose_sqlite.Authentication
 import com.example.lib_compose_sqlite.Person
 import com.example.lib_compose_sqlite.Student
 import com.example.lib_compose_sqlite.data.DBHelper
 import com.example.lib_compose_sqlite.ui.theme.LIB_COMPOSE_SQLITETheme
+import kotlinx.coroutines.launch
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController:NavController) {
@@ -48,7 +51,6 @@ fun HomeScreen(navController:NavController) {
                 .padding(values),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-//            Text(text = "LIBRARY MANAGEMENT SYSTEM")
             Spacer(modifier = Modifier.height(100.dp))
             Text(text = "Welcome to our Library!\n Explore the world of books and expand your horizons.", textAlign = TextAlign.Center, style = TextStyle(fontSize = 20.sp))
             Spacer(modifier = Modifier.height(100.dp))
@@ -84,10 +86,7 @@ fun AdminSignupScreen(navController: NavController,context: Context) {
     var adminPassword by remember {
         mutableStateOf("")
     }
-    LaunchedEffect(Unit){
-
-
-    }
+    val coroutineScope = rememberCoroutineScope()
     LIB_COMPOSE_SQLITETheme {
         Scaffold(
             modifier = Modifier
@@ -120,6 +119,7 @@ fun AdminSignupScreen(navController: NavController,context: Context) {
         ) {
             val dbhelper = DBHelper(context)
             Text(text = "ADMIN SIGN UP PAGE")
+
             Spacer(modifier = Modifier.height(20.dp))
             Text(text = "Name")
             TextField(
@@ -145,38 +145,39 @@ fun AdminSignupScreen(navController: NavController,context: Context) {
 
             Button(
                 onClick = {
-                    try {
-                        val admin = Person(adminName, adminPassword)
-                        val addAdmin = dbhelper.addAdmin(admin)
-                        if (addAdmin > 0) {
-                            navController.navigate(Screen.AdminLoginScreen.route) {
-                                popUpTo(Screen.AdminLoginScreen.route) {
-                                    inclusive = true
+                    coroutineScope.launch {
+                        try {
+                            val admin = Person(adminName, adminPassword)
+                            val addAdmin = dbhelper.addAdmin(admin)
+                            if (addAdmin > 0) {
+                                navController.navigate(Screen.AdminLoginScreen.route) {
+                                    popUpTo(Screen.AdminLoginScreen.route) {
+                                        inclusive = true
+                                    }
                                 }
-                            }
-                            Toast.makeText(
-                                context,
-                                "Admin - $addAdmin Signed Up successfully!",
-                                Toast.LENGTH_LONG
-                            )
-                                .show()
-                        } else {
-                            Toast.makeText(
-                                context,
-                                "Admin Signup Failed!",
-                                Toast.LENGTH_LONG
-                            )
-                                .show()
+                                Toast.makeText(
+                                    context,
+                                    "Admin - $addAdmin Signed Up successfully!",
+                                    Toast.LENGTH_LONG
+                                )
+                                    .show()
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    "$addAdmin Admin Signup Failed!",
+                                    Toast.LENGTH_LONG
+                                )
+                                    .show()
 
+                            }
+                        } catch (e: Exception) {
+                            Toast.makeText(
+                                context,
+                                "Admin Signup Failed",
+                                Toast.LENGTH_LONG
+                            )
+                                .show()
                         }
-                    }
-                    catch (e : Exception){
-                        Toast.makeText(
-                            context,
-                            "Admin Signup Failed",
-                            Toast.LENGTH_LONG
-                        )
-                            .show()
                     }
                 }) {
                 Text("Signup")
@@ -199,6 +200,8 @@ fun AdminLoginScreen(navController: NavController,context: Context){
     var adminPassword by remember {
         mutableStateOf("")
     }
+    val coroutineScope = rememberCoroutineScope()
+
     LIB_COMPOSE_SQLITETheme {
         Scaffold(
             modifier = Modifier
@@ -266,6 +269,7 @@ fun AdminLoginScreen(navController: NavController,context: Context){
 
                 Button(
                     onClick = {
+                        coroutineScope.launch {
                         try {
                             val admin = Admin(adminId.toInt(), adminName, adminPassword)
                             when {
@@ -293,8 +297,7 @@ fun AdminLoginScreen(navController: NavController,context: Context){
 
                                 }
                             }
-                        }
-                        catch (e : Exception){
+                        } catch (e: Exception) {
                             Toast.makeText(
                                 context,
                                 "Admin Login Failed!",
@@ -302,7 +305,7 @@ fun AdminLoginScreen(navController: NavController,context: Context){
                             )
                                 .show()
                         }
-
+                    }
                     }
                 )
                 {
@@ -330,6 +333,8 @@ fun StudentSignupScreen(navController: NavController,context: Context)
     var studentPassword by remember{
         mutableStateOf("")
     }
+    val coroutineScope = rememberCoroutineScope()
+
     LIB_COMPOSE_SQLITETheme {
         Scaffold(
             modifier = Modifier
@@ -385,15 +390,18 @@ fun StudentSignupScreen(navController: NavController,context: Context)
                 Spacer(modifier = Modifier.height(20.dp))
                 Button(
                     onClick = {
+                        coroutineScope.launch {
 
                         try {
                             val student = Person(studentName, studentPassword)
-                            if (studentPassword==""|| studentName=="" ){
-                                Toast.makeText(context, "Please enter both name and password .", Toast.LENGTH_LONG).show()
+                            if (studentPassword == "" || studentName == "") {
+                                Toast.makeText(context, "Please enter both name and password .", Toast.LENGTH_LONG)
+                                    .show()
                             }
                             val addStudent = dbhelper.addStudent(student)
                             if (addStudent > 0) {
-                                Toast.makeText(context, "Student - $addStudent Signup Successfull",Toast.LENGTH_LONG).show()
+                                Toast.makeText(context, "Student - $addStudent Signup Successfull", Toast.LENGTH_LONG)
+                                    .show()
                                 navController.navigate(Screen.StudentLoginScreen.route) {
                                     popUpTo(Screen.HomeScreen.route) {
                                         inclusive = true
@@ -408,8 +416,7 @@ fun StudentSignupScreen(navController: NavController,context: Context)
                                     .show()
 
                             }
-                        }
-                        catch (e : Exception){
+                        } catch (e: Exception) {
                             Toast.makeText(
                                 context,
                                 "Student SignUp Failed!",
@@ -417,6 +424,7 @@ fun StudentSignupScreen(navController: NavController,context: Context)
                             )
                                 .show()
                         }
+                    }
                     }
                 ) {
                     Text("Signup")
@@ -439,6 +447,8 @@ fun StudentLoginScreen(navController: NavController,context: Context) {
     var studentPassword by remember {
         mutableStateOf("")
     }
+    val coroutineScope = rememberCoroutineScope()
+
     LIB_COMPOSE_SQLITETheme {
         Scaffold(
             modifier = Modifier
@@ -507,43 +517,43 @@ fun StudentLoginScreen(navController: NavController,context: Context) {
 
                 Button(
                     onClick = {
-                        try {
-                            val student = Student(studentId.toInt(), studentName,studentPassword)
-                            val studentIdLogin = dbhelper.loginStudent(student)
-                            if(studentName==""){
-                                Toast.makeText(
-                                    context,
-                                    "Please enter your name.",
-                                    Toast.LENGTH_LONG
-                                )
-                                    .show()
+                        coroutineScope.launch {
+                            try {
+                                val student = Student(studentId.toInt(), studentName, studentPassword)
+                                val studentIdLogin = dbhelper.loginStudent(student)
+                                if (studentName == "") {
+                                    Toast.makeText(
+                                        context,
+                                        "Please enter your name.",
+                                        Toast.LENGTH_LONG
+                                    )
+                                        .show()
 
-                            }
-                            else if (studentIdLogin > 0) {
-                                Toast.makeText(
-                                    context,
-                                    "Login success $studentName",
-                                    Toast.LENGTH_LONG
-                                )
-                                    .show()
-                                navController.navigate("${Screen.StudentScreen.route}/$studentIdLogin")
-                            } else {
-                                Toast.makeText(
-                                    context,
-                                    "Invalid login credentials.",
-                                    Toast.LENGTH_LONG
-                                )
-                                    .show()
+                                } else if (studentIdLogin > 0) {
+                                    Toast.makeText(
+                                        context,
+                                        "Login success $studentName",
+                                        Toast.LENGTH_LONG
+                                    )
+                                        .show()
+                                    navController.navigate("${Screen.StudentScreen.route}/$studentIdLogin")
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        "Invalid login credentials.",
+                                        Toast.LENGTH_LONG
+                                    )
+                                        .show()
 
+                                }
+                            } catch (e: Exception) {
+                                Toast.makeText(
+                                    context,
+                                    "Student ID Login Failed!!",
+                                    Toast.LENGTH_LONG
+                                )
+                                    .show()
                             }
-                        }
-                        catch (e : Exception){
-                            Toast.makeText(
-                                context,
-                                "Student ID Login Failed!!",
-                                Toast.LENGTH_LONG
-                            )
-                                .show()
                         }
                     }
                 )

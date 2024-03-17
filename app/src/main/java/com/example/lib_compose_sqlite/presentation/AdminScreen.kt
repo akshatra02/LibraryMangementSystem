@@ -154,45 +154,47 @@ fun AdminScreen(navController: NavController) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BooksScreen(navController: NavController,context: Context) {
+    var count = 0
     LIB_COMPOSE_SQLITETheme {
         Scaffold(
             modifier = Modifier
                 .fillMaxSize(),
             topBar = {
                 TopAppBar(
-                    title = {Text(text = "Books")},
+                    title = { Text(text = "Books") },
                     navigationIcon = {
                         IconButton(onClick = {
-                            navController.navigate(Screen.AdminScreen.route){
-                                popUpTo(Screen.AdminScreen.route){
+                            navController.navigate(Screen.AdminScreen.route) {
+                                popUpTo(Screen.AdminScreen.route) {
                                     inclusive = true
                                 }
                             }
-                        }){
+                        }) {
                             Icon(
                                 imageVector = Icons.Default.ArrowBackIosNew,
                                 contentDescription = "Back"
                             )
                         }
                     }
-                    )
+                )
             }
-        ){values ->
+        ) { values ->
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(values),
             ) {
-                runBlocking{
+                runBlocking {
                     val dbHelper = DBHelper(context)
-                    val viewBooks = dbHelper.getBooks()
+                    dbHelper.getBooks().collect { viewBooks ->
                         val booksSize = viewBooks.size
                         if (booksSize > 0) {
-                            items(booksSize) {
+                            items(booksSize){
+                                count++
                                 val book = viewBooks[it]
-                                val (bookId,title,author,bookType,status) = book
+                                val (bookId, title, author, bookType, status) = book
                                 val booksStatus =
-                                if (status == 0) "\uD83D\uDFE2 Available" else  "\uD83D\uDD34 Reserved"
+                                    if (status == 0) "\uD83D\uDFE2 Available" else "\uD83D\uDD34 Reserved"
 
                                 Card(
                                     modifier = Modifier
@@ -215,24 +217,26 @@ fun BooksScreen(navController: NavController,context: Context) {
                                 Spacer(modifier = Modifier.height(20.dp))
 
                             }
-                        } else {
-                            items(1) {
-                                Card(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                ) {
-                                    Text(
-                                        text = "No books are in the Library.",
-                                        style = TextStyle(fontSize = 24.sp)
-                                    )
-                                }
+                        }
+                  else{
+                        items(1) {
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = "No books are in the Library.",
+                                    style = TextStyle(fontSize = 24.sp)
+                                )
                             }
+                        }
                         }
                     }
                 }
             }
         }
     }
+        }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -244,6 +248,7 @@ fun IssueBookScreen(navController: NavController,context:Context){
     var studentId by remember {
         mutableStateOf("")
     }
+    val coroutineScope = rememberCoroutineScope()
     LIB_COMPOSE_SQLITETheme {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
@@ -290,6 +295,8 @@ fun IssueBookScreen(navController: NavController,context:Context){
                 )
                 Button(
                     onClick = {
+                        coroutineScope.launch {
+
                         try {
 
                             val issue_book = dbHelper.issueBook(bookId.toInt(), studentId.toInt())
@@ -342,7 +349,8 @@ fun IssueBookScreen(navController: NavController,context:Context){
                             ).show()
                         }
 
-                }){
+                }
+            }){
                     Text("Issue Book")
                 }
             }
@@ -364,6 +372,7 @@ fun AddBookScreen(navController: NavController, context: Context){
     var booksType by remember {
         mutableStateOf("")
     }
+    val coroutineScope = rememberCoroutineScope()
     LIB_COMPOSE_SQLITETheme {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
@@ -421,28 +430,29 @@ fun AddBookScreen(navController: NavController, context: Context){
                 var addBook:Long
                 Button(
                     onClick = {
-                        try {
-                            if (booksTypePresent) {
-                                val booksTypeEntered = booksType.replaceFirstChar { it -> it.uppercaseChar() }
-                                val bookType = BookType.valueOf(booksTypeEntered)
-                                addBook = dbHelper.addBook(booksTitle,booksAuthor,bookType)
-                            } else {
-                                addBook = 0L
-                            }
-                            if (addBook == 0L) {
-                              Toast.makeText(
-                                context,
-                                "Sorry there is an issue! Kindly check the inputs.",
-                                Toast.LENGTH_LONG
-                                ).show()
-                            }
-                            else {
+                        coroutineScope.launch {
+
+                            try {
+                                if (booksTypePresent) {
+                                    val booksTypeEntered = booksType.replaceFirstChar { it -> it.uppercaseChar() }
+                                    val bookType = BookType.valueOf(booksTypeEntered)
+                                    addBook = dbHelper.addBook(booksTitle, booksAuthor, bookType)
+                                } else {
+                                    addBook = 0L
+                                }
+                                if (addBook == 0L) {
+                                    Toast.makeText(
+                                        context,
+                                        "Sorry there is an issue! Kindly check the inputs.",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                } else {
                                     Toast.makeText(context, "Book - $booksTitle added successfully!", Toast.LENGTH_LONG)
                                         .show()
                                     navController.navigate(Screen.AdminScreen.route)
                                 }
 
-                        }
+                            }
 //                        catch (e: NumberFormatException){
 //                            Toast.makeText(
 //                                context,
@@ -450,12 +460,13 @@ fun AddBookScreen(navController: NavController, context: Context){
 //                                Toast.LENGTH_LONG
 //                            ).show()
 //                        }
-                        catch (e: Error){
-                            Toast.makeText(
-                                context,
-                                "Failed to add book.",
-                                Toast.LENGTH_LONG
-                            ).show()
+                            catch (e: Error) {
+                                Toast.makeText(
+                                    context,
+                                    "Failed to add book.",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
                         }
                     }){
                     Text("Add Book")
@@ -472,6 +483,7 @@ fun RemoveBookScreen(navController: NavController, context: Context){
     var bookId by remember {
         mutableStateOf("")
     }
+    val coroutineScope = rememberCoroutineScope()
     LIB_COMPOSE_SQLITETheme {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
@@ -513,25 +525,26 @@ fun RemoveBookScreen(navController: NavController, context: Context){
 
                 Button(
                     onClick = {
-                        try {
-                            if (dbHelper.removeBook(bookId.toInt())) {
-                                Toast.makeText(context, "Book - $bookId removed successfully!", Toast.LENGTH_LONG)
-                                    .show()
-                                navController.navigate(Screen.AdminScreen.route)
-                            } else {
-                                Toast.makeText(context, "Failed: Check Book ID", Toast.LENGTH_LONG)
-                                    .show()
+                        coroutineScope.launch {
+                            try {
+                                if (dbHelper.removeBook(bookId.toInt())) {
+                                    Toast.makeText(context, "Book - $bookId removed successfully!", Toast.LENGTH_LONG)
+                                        .show()
+                                    navController.navigate(Screen.AdminScreen.route)
+                                } else {
+                                    Toast.makeText(context, "Failed: Check Book ID", Toast.LENGTH_LONG)
+                                        .show()
+                                }
+                            } catch (e: Exception) {
+                                Toast.makeText(
+                                    context,
+                                    "Failed to remove book!",
+                                    Toast.LENGTH_LONG
+                                ).show()
                             }
-                        }
-                        catch (e: Exception){
-                            Toast.makeText(
-                                context,
-                                "Failed to remove book!",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
 
 
+                        }
                     }){
                     Text("Remove Book")
                 }
