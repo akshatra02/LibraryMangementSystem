@@ -4,6 +4,7 @@ import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.*
@@ -13,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -72,6 +74,7 @@ fun HomeScreen(navController:NavController) {
     }
 }
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdminSignupScreen(navController: NavController,context: Context) {
@@ -80,6 +83,10 @@ fun AdminSignupScreen(navController: NavController,context: Context) {
     }
     var adminPassword by remember {
         mutableStateOf("")
+    }
+    LaunchedEffect(Unit){
+
+
     }
     LIB_COMPOSE_SQLITETheme {
         Scaffold(
@@ -130,7 +137,9 @@ fun AdminSignupScreen(navController: NavController,context: Context) {
                     adminPassword = it
                 },
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
+                keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password)
+
             )
             Spacer(modifier = Modifier.height(20.dp))
 
@@ -161,10 +170,10 @@ fun AdminSignupScreen(navController: NavController,context: Context) {
 
                         }
                     }
-                    catch (e : NumberFormatException){
+                    catch (e : Exception){
                         Toast.makeText(
                             context,
-                            "Admin ID must be number!",
+                            "Admin Signup Failed",
                             Toast.LENGTH_LONG
                         )
                             .show()
@@ -229,7 +238,9 @@ fun AdminLoginScreen(navController: NavController,context: Context){
                         adminId = it
                     },
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
+
                 )
                 Spacer(modifier = Modifier.height(20.dp))
                 Text(text = "Name")
@@ -248,7 +259,8 @@ fun AdminLoginScreen(navController: NavController,context: Context){
                         adminPassword = it
                     },
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password)
                 )
                 Spacer(modifier = Modifier.height(20.dp))
 
@@ -265,7 +277,7 @@ fun AdminLoginScreen(navController: NavController,context: Context){
                                     ).show()
                                 }
 
-                                (dbhelper.loginadmin(admin)) -> {
+                                (dbhelper.loginAdmin(admin)) -> {
                                     Toast.makeText(context, "Welcome $adminName", Toast.LENGTH_LONG).show()
 
                                     navController.navigate(Screen.AdminScreen.route)
@@ -282,10 +294,10 @@ fun AdminLoginScreen(navController: NavController,context: Context){
                                 }
                             }
                         }
-                        catch (e : NumberFormatException){
+                        catch (e : Exception){
                             Toast.makeText(
                                 context,
-                                "Admin ID must be number!",
+                                "Admin Login Failed!",
                                 Toast.LENGTH_LONG
                             )
                                 .show()
@@ -301,9 +313,7 @@ fun AdminLoginScreen(navController: NavController,context: Context){
 
                 ClickableText(
                     text = AnnotatedString("New User...?Sign up"),
-                    onClick = { offset ->
-                        navController.navigate(Screen.AdminSignupScreen.route)
-                    },
+                    onClick = {navController.navigate(Screen.AdminSignupScreen.route)},
                     style = TextStyle(fontSize = 20.sp, color = MaterialTheme.colorScheme.secondary)
                 )
             }
@@ -367,7 +377,10 @@ fun StudentSignupScreen(navController: NavController,context: Context)
                 TextField(
                     value = studentPassword, onValueChange = {
                         studentPassword = it
-                    }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password)
+
                 )
                 Spacer(modifier = Modifier.height(20.dp))
                 Button(
@@ -396,10 +409,10 @@ fun StudentSignupScreen(navController: NavController,context: Context)
 
                             }
                         }
-                        catch (e : NumberFormatException){
+                        catch (e : Exception){
                             Toast.makeText(
                                 context,
-                                "Student ID must be number!",
+                                "Student SignUp Failed!",
                                 Toast.LENGTH_LONG
                             )
                                 .show()
@@ -466,7 +479,9 @@ fun StudentLoginScreen(navController: NavController,context: Context) {
                         studentId = it
                     },
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
+
                 )
                 Spacer(modifier = Modifier.height(20.dp))
 
@@ -484,7 +499,9 @@ fun StudentLoginScreen(navController: NavController,context: Context) {
                         studentPassword = it
                     },
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password)
+
                 )
                 Spacer(modifier = Modifier.height(20.dp))
 
@@ -492,7 +509,7 @@ fun StudentLoginScreen(navController: NavController,context: Context) {
                     onClick = {
                         try {
                             val student = Student(studentId.toInt(), studentName,studentPassword)
-                            val studentIdLogin = dbhelper.loginstudent(student)
+                            val studentIdLogin = dbhelper.loginStudent(student)
                             if(studentName==""){
                                 Toast.makeText(
                                     context,
@@ -520,10 +537,10 @@ fun StudentLoginScreen(navController: NavController,context: Context) {
 
                             }
                         }
-                        catch (e : NumberFormatException){
+                        catch (e : Exception){
                             Toast.makeText(
                                 context,
-                                "Student ID must be number!",
+                                "Student ID Login Failed!!",
                                 Toast.LENGTH_LONG
                             )
                                 .show()
@@ -537,9 +554,7 @@ fun StudentLoginScreen(navController: NavController,context: Context) {
                 Spacer(modifier = Modifier.height(30.dp))
                 ClickableText(
                     text = AnnotatedString("New User...?Sign up"),
-                    onClick = { offset ->
-                        navController.navigate(Screen.StudentSignupScreen.route)
-                    },
+                    onClick = { navController.navigate(Screen.StudentSignupScreen.route)},
                     style = TextStyle(fontSize = 20.sp, color = MaterialTheme.colorScheme.secondary)
 
                 )

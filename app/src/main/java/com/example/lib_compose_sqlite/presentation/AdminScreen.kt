@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.*
@@ -15,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.capitalize
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.tooling.preview.Preview
@@ -25,6 +27,7 @@ import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.lib_compose_sqlite.Book
+import com.example.lib_compose_sqlite.BookIssueStatus
 //import com.example.lib_compose_sqlite.BookStatus
 import com.example.lib_compose_sqlite.BookType
 import com.example.lib_compose_sqlite.data.DBHelper
@@ -188,12 +191,9 @@ fun BooksScreen(navController: NavController,context: Context) {
                             items(booksSize) {
                                 val book = viewBooks[it]
                                 val (bookId,title,author,bookType,status) = book
-                                val booksStatus: String
-                                if (status == 0) {
-                                    booksStatus = " \uD83D\uDFE2 Available"
-                                } else {
-                                    booksStatus = " \uD83D\uDD34 Reserved"
-                                }
+                                val booksStatus =
+                                if (status == 0) "\uD83D\uDFE2 Available" else  "\uD83D\uDD34 Reserved"
+
                                 Card(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -275,7 +275,8 @@ fun IssueBookScreen(navController: NavController,context:Context){
                         bookId =it
                     },
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
                 )
                 Text(text = "Enter Student Id: ")
                 TextField(
@@ -283,25 +284,27 @@ fun IssueBookScreen(navController: NavController,context:Context){
                         studentId =it
                     },
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
+
                 )
                 Button(
                     onClick = {
                         try {
 
-                            val issue_book = dbHelper.issuebook(bookId.toInt(), studentId.toInt())
+                            val issue_book = dbHelper.issueBook(bookId.toInt(), studentId.toInt())
                             when (issue_book) {
-                                -1 -> {
+                                BookIssueStatus.Failed -> {
                                     Toast.makeText(context, "Failed to issue the book. Please try again later.", Toast.LENGTH_LONG).show()
                                     navController.navigate(Screen.AdminScreen.route)
                                 }
 
-                                1 -> {
+                                BookIssueStatus.StudentLimitExceeded -> {
                                     Toast.makeText(context, "Student's Book limit exceeded!", Toast.LENGTH_LONG).show()
                                     navController.navigate(Screen.AdminScreen.route)
                                 }
 
-                                2 -> {
+                                BookIssueStatus.Successful -> {
                                     Toast.makeText(
                                         context,
                                         "BOOK-$bookId issued to Student-$studentId  successfully!",
@@ -311,7 +314,7 @@ fun IssueBookScreen(navController: NavController,context:Context){
 
                                 }
 
-                                3 -> {
+                                BookIssueStatus.AlreadyReserved -> {
                                     Toast.makeText(
                                         context,
                                         "Sorry Book-$bookId is already reserved!",
@@ -320,7 +323,7 @@ fun IssueBookScreen(navController: NavController,context:Context){
                                         .show()
                                 }
 
-                                else -> {
+                                BookIssueStatus.InvalidInput -> {
                                     Toast.makeText(
                                         context,
                                         "Please enter valid Book id and student id",
@@ -352,9 +355,6 @@ fun IssueBookScreen(navController: NavController,context:Context){
 @Composable
 fun AddBookScreen(navController: NavController, context: Context){
     val dbHelper:DBHelper =DBHelper(context)
-    var bookId by remember {
-        mutableStateOf("")
-    }
     var booksTitle by remember {
         mutableStateOf("")
     }
@@ -390,14 +390,6 @@ fun AddBookScreen(navController: NavController, context: Context){
                     .padding(values)
             ) {
                 Spacer(modifier = Modifier.height(20.dp))
-                Text(text = "Enter Book Id: ")
-                TextField(
-                    value = bookId, onValueChange = {
-                        bookId =it
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
                 Text(text = "Enter Book Title: ")
                 TextField(
                     value = booksTitle, onValueChange = {
@@ -432,38 +424,36 @@ fun AddBookScreen(navController: NavController, context: Context){
                         try {
                             if (booksTypePresent) {
                                 val booksTypeEntered = booksType.replaceFirstChar { it -> it.uppercaseChar() }
-                                val bookType: BookType = BookType.valueOf(booksTypeEntered)
-                                val newBook = Book(bookId.toInt(), booksTitle, booksAuthor, bookType, 0)
-                                addBook = dbHelper.addbook(newBook)
+                                val bookType = BookType.valueOf(booksTypeEntered)
+                                addBook = dbHelper.addBook(booksTitle,booksAuthor,bookType)
                             } else {
                                 addBook = 0L
                             }
-                            when (addBook) {
-                                0L -> Toast.makeText(
-                                    context,
-                                    "Sorry there is an issue! Kindly check the inputs.",
-                                    Toast.LENGTH_LONG
+                            if (addBook == 0L) {
+                              Toast.makeText(
+                                context,
+                                "Sorry there is an issue! Kindly check the inputs.",
+                                Toast.LENGTH_LONG
                                 ).show()
-
-                                -1L -> Toast.makeText(context, "Book ID already exixts.", Toast.LENGTH_LONG).show()
-                                else -> {
+                            }
+                            else {
                                     Toast.makeText(context, "Book - $booksTitle added successfully!", Toast.LENGTH_LONG)
                                         .show()
                                     navController.navigate(Screen.AdminScreen.route)
                                 }
-                            }
+
                         }
-                        catch (e: NumberFormatException){
-                            Toast.makeText(
-                                context,
-                                "Book ID must be number!",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
+//                        catch (e: NumberFormatException){
+//                            Toast.makeText(
+//                                context,
+//                                "Book ID must be number!",
+//                                Toast.LENGTH_LONG
+//                            ).show()
+//                        }
                         catch (e: Error){
                             Toast.makeText(
                                 context,
-                                "Book ID already exixts.",
+                                "Failed to add book.",
                                 Toast.LENGTH_LONG
                             ).show()
                         }
@@ -515,14 +505,16 @@ fun RemoveBookScreen(navController: NavController, context: Context){
                         bookId =it
                     },
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
+
                 )
                 Spacer(modifier = Modifier.height(20.dp))
 
                 Button(
                     onClick = {
                         try {
-                            if (dbHelper.removebook(bookId.toInt())) {
+                            if (dbHelper.removeBook(bookId.toInt())) {
                                 Toast.makeText(context, "Book - $bookId removed successfully!", Toast.LENGTH_LONG)
                                     .show()
                                 navController.navigate(Screen.AdminScreen.route)
@@ -531,10 +523,10 @@ fun RemoveBookScreen(navController: NavController, context: Context){
                                     .show()
                             }
                         }
-                        catch (e: NumberFormatException){
+                        catch (e: Exception){
                             Toast.makeText(
                                 context,
-                                "Book ID must be number!",
+                                "Failed to remove book!",
                                 Toast.LENGTH_LONG
                             ).show()
                         }

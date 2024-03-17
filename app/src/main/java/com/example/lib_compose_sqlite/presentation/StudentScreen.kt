@@ -1,29 +1,26 @@
 package com.example.lib_compose_sqlite.presentation
 
 import android.content.Context
-import android.widget.Adapter
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.lib_compose_sqlite.BookReturnStatus
 //import com.example.lib_compose_sqlite.BookStatus
 import com.example.lib_compose_sqlite.data.DBHelper
 import com.example.lib_compose_sqlite.ui.theme.LIB_COMPOSE_SQLITETheme
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import kotlin.contracts.Returns
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -166,12 +163,9 @@ fun StudentBooksScreen(navController: NavController, context: Context,studentId:
                         items(booksSize) {
                             val book = viewBooks[it]
                             val (id,title,author,bookType,status)=book
-                            val bookStatus: String
-                            if (status == 0) {
-                                bookStatus = " \uD83D\uDFE2 Available"
-                            } else {
-                                bookStatus = " \uD83D\uDD34 Reserved"
-                            }
+                            val bookStatus  =
+                                if (status == 0) "\uD83D\uDFE2 Available" else  "\uD83D\uDD34 Reserved"
+
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -246,18 +240,15 @@ fun StudentMyBookScreen(navController: NavController,context: Context,studentId:
             ) {
                 runBlocking {
                     val dbHelper = DBHelper(context)
-                    val viewBooks = dbHelper.get_student_my_book(studentId).collect{viewBooks ->
+                    val viewBooks = dbHelper.getStudentMyBook(studentId).collect{viewBooks ->
                     val booksSize = viewBooks.size
                     if (booksSize > 0) {
                         items(booksSize) {
                             val book = viewBooks[it]
                             val (bookId,title,author,bookType,status) = book
-                            val bookStatus: String
-                            if (status == 0) {
-                                bookStatus = " \uD83D\uDFE2 Available"
-                            } else {
-                                bookStatus = " \uD83D\uDD34 Reserved"
-                            }
+                            val bookStatus  =
+                                if (status == 0) "\uD83D\uDFE2 Available" else  "\uD83D\uDD34 Reserved"
+
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -343,29 +334,19 @@ fun ReturnBookScreen(navController: NavController,context: Context,studentId: In
                     onValueChange = {
                         bookid = it
                     },
-                    modifier = Modifier .fillMaxWidth()
+                    modifier = Modifier .fillMaxWidth() ,
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
                 )
                 Button(
                     onClick = {
                         val dbHelper = DBHelper(context)
-                        try {
-                            val returnbook = dbHelper.return_book(bookid.toInt(), studentId)
+//                        try {
+                            val returnbook = dbHelper.returnBook(bookid.toInt(), studentId)
                             when (returnbook) {
-                                0 -> {
+                                BookReturnStatus.WrongBookId -> {
                                     Toast.makeText(context, "Entered Wrong Book Id.", Toast.LENGTH_LONG).show()
                                 }
-                                -2 ->{
-                                    Toast.makeText(
-                                        context,
-                                        "No books are reserved to return!",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                    navController.navigate("${Screen.StudentScreen.route}/$studentId") {
-                                        popUpTo("${Screen.StudentScreen.route}/$studentId")
-                                    }
-                                }
-
-                                1 -> {
+                                BookReturnStatus.Successful -> {
                                     Toast.makeText(
                                         context,
                                         "Book = $bookid is returned successfully",
@@ -375,18 +356,27 @@ fun ReturnBookScreen(navController: NavController,context: Context,studentId: In
                                         popUpTo("${Screen.StudentScreen.route}/$studentId")
                                     }
                                 }
-
-                                else -> Toast.makeText(context, "Failed to return the book. Please try again later.", Toast.LENGTH_LONG).show()
+                                BookReturnStatus.NoBookReserved ->{
+                                    Toast.makeText(
+                                        context,
+                                        "No books are reserved to return!",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                    navController.navigate("${Screen.StudentScreen.route}/$studentId") {
+                                        popUpTo("${Screen.StudentScreen.route}/$studentId")
+                                    }
+                                }
+                                BookReturnStatus.Failed-> Toast.makeText(context, "Failed to return the book. Please try again later.", Toast.LENGTH_LONG).show()
                             }
 
-                        }
-                        catch (e: NumberFormatException){
-                            Toast.makeText(
-                                context,
-                                "Book ID must be number!",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
+//                        }
+//                        catch (e: NumberFormatException){
+//                            Toast.makeText(
+//                                context,
+//                                "Book ID must be number!",
+//                                Toast.LENGTH_LONG
+//                            ).show()
+//                        }
                     }
 
                 )

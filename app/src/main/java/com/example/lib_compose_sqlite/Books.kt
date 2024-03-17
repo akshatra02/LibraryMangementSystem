@@ -16,5 +16,21 @@ data class Book(
     val title: String,
     val author: String,
     val bookType: BookType,
-    val reservedStudentId: Int,
+    val reservedStudentId: Int?,
 )
+//class BookItems():Book
+
+enum class BookReturnStatus(){
+    WrongBookId,
+    Successful,
+    NoBookReserved,
+    Failed,
+}
+enum class BookIssueStatus{
+    Failed,
+    Successful,
+    AlreadyReserved,
+    StudentLimitExceeded,
+    InvalidInput,
+
+}

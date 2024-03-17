@@ -5,7 +5,6 @@ import android.database.sqlite.SQLiteConstraintException
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.widget.Toast
-import androidx.core.database.getStringOrNull
 import com.example.lib_compose_sqlite.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -54,49 +53,44 @@ class DBHelper(private val context: Context):
                 "$STUDENT_COLUMN_PASSWORD TEXT NOT NULL," +
                 "$STUDENT_COLUMN_RESERVEDBOOKS_COUNT INTEGER)")
         val createBookTableQuery = ("CREATE TABLE $BOOK_TABLE_NAME (" +
-                "$BOOK_COLUMN_ID INTEGER PRIMARY KEY ," +
+                "$BOOK_COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "$BOOK_COLUMN_TITLE TEXT NOT NULL," +
                 "$BOOK_COLUMN_AUTHOR TEXT NOT NULL," +
                 "$BOOK_COLUMN_TYPE TEXT NOT NULL," +
 //                "$BOOK_COLUMN_STATUS TEXT NOT NULL," +
                 "$RESERVED_STUDENT_ID INTEGER)")
         //Book entries
-        val b1 = Book(101, "Dravidian Lang tech", "Ramaswamy", BookType.Journal,0)
-        val b2 = Book(102, "Nine Tale Fox", "Wil Tal", BookType.Fiction,0)
-        val b3 = Book(103, "Forbes", "Kim", BookType.Magazine, 0)
-        val b4 = Book(104, "M.S.Dhoni", "Aaradhiya", BookType.Biography, 0)
-        val b5 = Book(105, "1990's Vision", "Rukmani", BookType.Historic,0)
+        val b1 = Book(1, "Dravidian Lang tech", "Ramaswamy", BookType.Journal,null)
+        val b2 = Book(1, "Nine Tale Fox", "Wil Tal", BookType.Fiction,null)
+        val b3 = Book(1, "Forbes", "Kim", BookType.Magazine, null)
+        val b4 = Book(1, "M.S.Dhoni", "Aaradhiya", BookType.Biography, null)
+        val b5 = Book(1, "1990's Vision", "Rukmani", BookType.Historic,null)
 
-        val addBooksQuery1 = ("INSERT INTO $BOOK_TABLE_NAME (" +
-                "$BOOK_COLUMN_ID," +
+        val addBooksQuery1 = ("INSERT INTO $BOOK_TABLE_NAME ("+
                 "$BOOK_COLUMN_TITLE," +
                 "$BOOK_COLUMN_AUTHOR," +
                 "$BOOK_COLUMN_TYPE," +
-                "$RESERVED_STUDENT_ID ) VALUES (${b1.bookId},\"${b1.title}\",\"${b1.author}\",\"${b1.bookType}\",\"${b1.reservedStudentId}\")")
+                "$RESERVED_STUDENT_ID ) VALUES (\"${b1.title}\",\"${b1.author}\",\"${b1.bookType}\",\"${b1.reservedStudentId}\")")
         val addBooksQuery2 = ("INSERT INTO $BOOK_TABLE_NAME (" +
-                "$BOOK_COLUMN_ID," +
                 "$BOOK_COLUMN_TITLE," +
                 "$BOOK_COLUMN_AUTHOR," +
                 "$BOOK_COLUMN_TYPE," +
-                "$RESERVED_STUDENT_ID) VALUES (${b2.bookId},\"${b2.title}\",\"${b2.author}\",\"${b2.bookType}\",\"${b2.reservedStudentId}\")")
+                "$RESERVED_STUDENT_ID) VALUES (\"${b2.title}\",\"${b2.author}\",\"${b2.bookType}\",\"${b2.reservedStudentId}\")")
         val addBooksQuery3 = ("INSERT INTO $BOOK_TABLE_NAME (" +
-                "$BOOK_COLUMN_ID," +
                 "$BOOK_COLUMN_TITLE," +
                 "$BOOK_COLUMN_AUTHOR," +
                 "$BOOK_COLUMN_TYPE," +
-                "$RESERVED_STUDENT_ID) VALUES (${b3.bookId},\"${b3.title}\",\"${b3.author}\",\"${b3.bookType}\",\"${b3.reservedStudentId}\")")
+                "$RESERVED_STUDENT_ID) VALUES (\"${b3.title}\",\"${b3.author}\",\"${b3.bookType}\",\"${b3.reservedStudentId}\")")
         val addBooksQuery4 = ("INSERT INTO $BOOK_TABLE_NAME (" +
-                "$BOOK_COLUMN_ID," +
                 "$BOOK_COLUMN_TITLE," +
                 "$BOOK_COLUMN_AUTHOR," +
                 "$BOOK_COLUMN_TYPE," +
-                "$RESERVED_STUDENT_ID)VALUES (${b4.bookId},\"${b4.title}\",\"${b4.author}\",\"${b4.bookType}\",\"${b4.reservedStudentId}\")")
+                "$RESERVED_STUDENT_ID)VALUES (\"${b4.title}\",\"${b4.author}\",\"${b4.bookType}\",\"${b4.reservedStudentId}\")")
         val addBooksQuery5 = ("INSERT INTO $BOOK_TABLE_NAME (" +
-                "$BOOK_COLUMN_ID," +
                 "$BOOK_COLUMN_TITLE," +
                 "$BOOK_COLUMN_AUTHOR," +
                 "$BOOK_COLUMN_TYPE," +
-                "$RESERVED_STUDENT_ID) VALUES (${b5.bookId},\"${b5.title}\",\"${b5.author}\",\"${b5.bookType}\",\"${b5.reservedStudentId}\")")
+                "$RESERVED_STUDENT_ID) VALUES (\"${b5.title}\",\"${b5.author}\",\"${b5.bookType}\",\"${b5.reservedStudentId}\")")
 
         db?.execSQL(createAdminTableQuery)
         db?.execSQL(createStudentTableQuery)
@@ -127,7 +121,7 @@ class DBHelper(private val context: Context):
         return db.insert(ADMIN_TABLE_NAME, null, values)
     }
 
-    fun loginadmin(admin: Admin): Boolean {
+    fun loginAdmin(admin: Admin): Boolean {
         val db = this.readableDatabase
         val selection = "$ADMIN_COLUMN_ID =?  AND $ADMIN_COLUMN_PASSWORD =?"
         val selectionArgs = arrayOf(admin.adminId.toString(), admin.adminPassword)
@@ -147,7 +141,7 @@ class DBHelper(private val context: Context):
         return db.insert(STUDENT_TABLE_NAME, null, values)
     }
 
-    fun loginstudent(student: Student): Int {
+    fun loginStudent(student: Student): Int {
         val db = this.readableDatabase
         val selection = "$STUDENT_COLUMN_ID =? AND $STUDENT_COLUMN_PASSWORD =?"
         val selectionArg =
@@ -186,7 +180,7 @@ class DBHelper(private val context: Context):
         }
     }
 
-    fun issuebook(bid: Int, student_id: Int): Int {
+    fun issueBook(bid: Int, student_id: Int): BookIssueStatus {
         try {
             val dbRead = this.readableDatabase
             val dbWrite = this.writableDatabase
@@ -222,11 +216,12 @@ class DBHelper(private val context: Context):
                             dbWrite.close()
                             studentCursor.close()
                             bookCursor.close()
-                            return 1
+                            return BookIssueStatus.StudentLimitExceeded
                         } else {
                             studentBookLimit++
-                            val bookStatusValues = ContentValues()
-                            bookStatusValues.put(RESERVED_STUDENT_ID, student_id)
+                            val bookStatusValues = ContentValues().apply {
+                                put(RESERVED_STUDENT_ID, student_id)
+                            }
                             val bookStatusSelection = "$BOOK_COLUMN_ID = ?"
                             val bookStatusSelectionArgs = arrayOf(bid.toString())
                             dbWrite.update(
@@ -236,11 +231,12 @@ class DBHelper(private val context: Context):
                                 bookStatusSelectionArgs
                             )
 
-                            val studentBookCountValues = ContentValues()
-                            studentBookCountValues.put(STUDENT_COLUMN_RESERVEDBOOKS_COUNT, studentBookLimit)
+                            val studentBookCountValues = ContentValues().apply {
+                                put(STUDENT_COLUMN_RESERVEDBOOKS_COUNT, studentBookLimit)
+                            }
                             val studentBookCountSelection = "$STUDENT_COLUMN_ID = ?"
                             val studentBookCountSelectionArgs = arrayOf(student_id.toString())
-                            dbWrite.update(
+                             dbWrite.update(
                                 STUDENT_TABLE_NAME,
                                 studentBookCountValues,
                                 studentBookCountSelection,
@@ -250,31 +246,42 @@ class DBHelper(private val context: Context):
                             dbWrite.close()
                             studentCursor.close()
                             bookCursor.close()
-                            return 2
+                            return BookIssueStatus.Successful
                         }
                     }
+                    else {
+                        studentCursor.close()
+                        dbRead.close()
+                        dbWrite.close()
+                        bookCursor.close()
+                        return BookIssueStatus.InvalidInput
+                    }
                 }
-                    return 0
-                } else {
+                else{
                     dbRead.close()
                     dbWrite.close()
                     bookCursor.close()
-                    return 3
+                    return BookIssueStatus.AlreadyReserved
                 }
+            } else {
+                dbRead.close()
+                dbWrite.close()
+                bookCursor.close()
+                return BookIssueStatus.InvalidInput
+            }
         }
         catch (e: SQLiteConstraintException) {
-            return -1
+            return BookIssueStatus.Failed
         }
     }
 
-    fun addbook(book: Book): Long {
+    fun addBook(booksTitle:String, booksAuthor:String,bookType:BookType): Long {
         try {
             val dbWrite = this.writableDatabase
             val values = ContentValues()
-            values.put(BOOK_COLUMN_ID, book.bookId)
-            values.put(BOOK_COLUMN_TITLE, book.title)
-            values.put(BOOK_COLUMN_AUTHOR, book.author)
-            values.put(BOOK_COLUMN_TYPE, book.bookType.name)
+            values.put(BOOK_COLUMN_TITLE,booksTitle)
+            values.put(BOOK_COLUMN_AUTHOR,booksAuthor)
+            values.put(BOOK_COLUMN_TYPE, bookType.name)
             values.put(RESERVED_STUDENT_ID, 0)
             return dbWrite.insert(BOOK_TABLE_NAME, null, values)
         } catch (e: SQLiteConstraintException) {
@@ -283,7 +290,7 @@ class DBHelper(private val context: Context):
 
     }
 
-    fun removebook(bookid: Int): Boolean {
+    fun removeBook(bookid: Int): Boolean {
         try {
             val dbWrite = this.writableDatabase
             val selection = "$BOOK_COLUMN_ID=?"
@@ -294,11 +301,11 @@ class DBHelper(private val context: Context):
         }
     }
 
-    fun get_student_my_book(studentid: Int): Flow<List<Book>> = flow {
+    fun getStudentMyBook(studentid: Int): Flow<List<Book>> = flow {
         try {
             val dbRead = readableDatabase
             val getBooksCursor = dbRead.rawQuery("SELECT * FROM $BOOK_TABLE_NAME", null)
-            if (getBooksCursor.moveToNext()) {
+            while (getBooksCursor.moveToNext()) {
                 val reserveStudentId = getBooksCursor.getInt(
                     getBooksCursor.getColumnIndexOrThrow(
                         RESERVED_STUDENT_ID
@@ -323,21 +330,17 @@ class DBHelper(private val context: Context):
                         studentid
                     )
                     books.add(book)
-                    getBooksCursor.close()
                     emit(books)
-                } else {
-                    getBooksCursor.close()
-                    dbRead.close()
-                    emit(emptyList())
                 }
             }
+            getBooksCursor.close()
         }catch (e: SQLiteConstraintException) {
             Toast.makeText(context, "Failed to retrieve the book. Please try again later.", Toast.LENGTH_LONG).show()
             emit(emptyList())
         }
     }.flowOn(Dispatchers.IO)
 
-    fun return_book(bid: Int, studentid: Int): Int {
+    fun returnBook(bid: Int, studentid: Int): BookReturnStatus {
         try {
             val dbRead = this.readableDatabase
             val dbWrite = this.writableDatabase
@@ -371,50 +374,53 @@ class DBHelper(private val context: Context):
                                 STUDENT_COLUMN_RESERVEDBOOKS_COUNT
                             )
                         )
-                        if (studentBookCount > 0) {
-                            val values = ContentValues()
-                            values.put(RESERVED_STUDENT_ID, 0)
-                            val updateBookCursor =
-                                dbWrite.update(BOOK_TABLE_NAME, values, selection, selectionArguments)
-                            val studentValuesBookCount = ContentValues()
-                            studentValuesBookCount.put(STUDENT_COLUMN_RESERVEDBOOKS_COUNT, --studentBookCount)
-                            val updateStudentBooksCount = dbWrite.update(
-                                STUDENT_TABLE_NAME,
-                                studentValuesBookCount,
-                                studentSelection,
-                                studentSelectionArg
-                            )
-                            if (updateStudentBooksCount > 0 && updateBookCursor > 0) {
-                                getReturnBookCursor.close()
-                                getStudent.close()
-                                dbWrite.close()
-                                dbRead.close()
-                                return 1
-                            }
-                        } else {
+//                        if (studentBookCount > 0) {
+                        val values = ContentValues().apply {
+                            put(RESERVED_STUDENT_ID, 0)
+                        }
+                        val updateBookCursor =
+                            dbWrite.update(BOOK_TABLE_NAME, values, selection, selectionArguments)
+                        val studentValuesBookCount = ContentValues().apply {
+                            put(STUDENT_COLUMN_RESERVEDBOOKS_COUNT, --studentBookCount)
+                        }
+                        val updateStudentBooksCount = dbWrite.update(
+                            STUDENT_TABLE_NAME,
+                            studentValuesBookCount,
+                            studentSelection,
+                            studentSelectionArg
+                        )
+                        if (updateStudentBooksCount > 0 && updateBookCursor > 0) {
                             getReturnBookCursor.close()
                             getStudent.close()
                             dbWrite.close()
                             dbRead.close()
-                            return -2
+                            return BookReturnStatus.Successful
                         }
-                    } else {
-                        getReturnBookCursor.close()
-                        getStudent.close()
-                        dbWrite.close()
-                        dbRead.close()
-                        return -1
+                        else {
+                            getReturnBookCursor.close()
+                            getStudent.close()
+                            dbWrite.close()
+                            dbRead.close()
+                            return BookReturnStatus.Failed
+                         }
                     }
                 }
-
+                else{
+                    getReturnBookCursor.close()
+                    dbWrite.close()
+                    dbRead.close()
+                    return BookReturnStatus.NoBookReserved
+                }
+            }
+            else{
                 getReturnBookCursor.close()
                 dbWrite.close()
                 dbRead.close()
-                return 0
+                return BookReturnStatus.WrongBookId
             }
         }catch (e: SQLiteConstraintException) {
-            return -3
+            return BookReturnStatus.Failed
         }
-        return 0
+        return BookReturnStatus.Failed
     }
 }
