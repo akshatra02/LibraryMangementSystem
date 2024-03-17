@@ -31,11 +31,11 @@ import com.example.lib_compose_sqlite.BookIssueStatus
 //import com.example.lib_compose_sqlite.BookStatus
 import com.example.lib_compose_sqlite.BookType
 import com.example.lib_compose_sqlite.data.DBHelper
+import com.example.lib_compose_sqlite.presentation.components.BooksList
+import com.example.lib_compose_sqlite.presentation.components.CardComponent
+import com.example.lib_compose_sqlite.presentation.components.Header
 import com.example.lib_compose_sqlite.ui.theme.LIB_COMPOSE_SQLITETheme
 import kotlinx.coroutines.*
-
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AdminScreen(navController: NavController) {
     LIB_COMPOSE_SQLITETheme {
@@ -43,23 +43,7 @@ fun AdminScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxSize(),
             topBar = {
-                TopAppBar(
-                    title = { Text(text = "Admin") },
-                    navigationIcon = {
-                        IconButton(onClick = {
-                            navController.navigate(Screen.HomeScreen.route) {
-                                popUpTo(Screen.HomeScreen.route) {
-                                    inclusive = true
-                                }
-                            }
-                        }) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowBackIosNew,
-                                contentDescription = "Back"
-                            )
-                        }
-                    }
-                )
+                Header(navController,"Admin",Screen.HomeScreen.route)
             }
         ) { values ->
             Column(
@@ -68,177 +52,36 @@ fun AdminScreen(navController: NavController) {
                     .fillMaxSize()
                     .padding(values),
             ) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(120.dp),
-                    onClick = { navController.navigate(Screen.BooksScreen.route) },
-
+                CardComponent(
+                    "Books"
                 ) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "Books",
-                            style = TextStyle(fontSize = 24.sp)
-                        )
-                    }
+                    navController.navigate(Screen.BooksScreen.route)
                 }
-                Spacer(modifier = Modifier.height(20.dp))
-
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(120.dp),
-
-                    onClick = { navController.navigate(Screen.IssueBookScreen.route) },
-
-                    ) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "Issue Book",
-                            style = TextStyle(fontSize = 24.sp)
-
-                        )
-                    }               }
-                Spacer(modifier = Modifier.height(20.dp))
-
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(120.dp),
-
-                    onClick = { navController.navigate(Screen.AddBookScreen.route) },
-
-                    ) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "Add Book",
-                            style = TextStyle(fontSize = 24.sp)
-
-                        )
-                    }
+                CardComponent(
+                    "Issue Book"
+                ) {
+                    navController.navigate(Screen.IssueBookScreen.route)
                 }
-                Spacer(modifier = Modifier.height(20.dp))
-
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(120.dp),
-
-                    onClick = { navController.navigate(Screen.RemoveBookScreen.route) },
-
-                    ) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "Remove Book",
-                            style = TextStyle(fontSize = 24.sp)
-                        )
-                    }
+                CardComponent(
+                    "Add Book"
+                ) {
+                    navController.navigate(Screen.AddBookScreen.route)
                 }
+                CardComponent(
+                    "Remove Book"
+                ) {
+                    navController.navigate(Screen.RemoveBookScreen.route)
+                }
+            }
             }
         }
     }
-}
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BooksScreen(navController: NavController,context: Context) {
-    var count = 0
-    LIB_COMPOSE_SQLITETheme {
-        Scaffold(
-            modifier = Modifier
-                .fillMaxSize(),
-            topBar = {
-                TopAppBar(
-                    title = { Text(text = "Books") },
-                    navigationIcon = {
-                        IconButton(onClick = {
-                            navController.navigate(Screen.AdminScreen.route) {
-                                popUpTo(Screen.AdminScreen.route) {
-                                    inclusive = true
-                                }
-                            }
-                        }) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowBackIosNew,
-                                contentDescription = "Back"
-                            )
-                        }
-                    }
-                )
-            }
-        ) { values ->
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(values),
-            ) {
-                runBlocking {
-                    val dbHelper = DBHelper(context)
-                    dbHelper.getBooks().collect { viewBooks ->
-                        val booksSize = viewBooks.size
-                        if (booksSize > 0) {
-                            items(booksSize){
-                                count++
-                                val book = viewBooks[it]
-                                val (bookId, title, author, bookType, status) = book
-                                val booksStatus =
-                                    if (status == 0) "\uD83D\uDFE2 Available" else "\uD83D\uDD34 Reserved"
+    BooksList(navController,context,Screen.AdminScreen.route)
+}
 
-                                Card(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                ) {
-                                    Text(
-                                        text = "${bookId} - ${title}",
-                                        style = TextStyle(fontSize = 24.sp)
-                                    )
-                                    Text(
-                                        text = "Author: ${author} - Type: ${bookType} "
-                                    )
-
-                                    Text(
-                                        text = booksStatus
-
-                                    )
-                                    Spacer(modifier = Modifier.height(20.dp))
-                                }
-                                Spacer(modifier = Modifier.height(20.dp))
-
-                            }
-                        }
-                  else{
-                        items(1) {
-                            Card(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                            ) {
-                                Text(
-                                    text = "No books are in the Library.",
-                                    style = TextStyle(fontSize = 24.sp)
-                                )
-                            }
-                        }
-                        }
-                    }
-                }
-            }
-        }
-    }
-        }
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun IssueBookScreen(navController: NavController,context:Context){
     val dbHelper:DBHelper =DBHelper(context)
@@ -253,22 +96,10 @@ fun IssueBookScreen(navController: NavController,context:Context){
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             topBar = {
-                TopAppBar(title = {Text(text = "Issue Book")},
-                    navigationIcon = {
-                        IconButton(onClick = {
-                            navController.navigate(Screen.AdminScreen.route){
-                                popUpTo(Screen.AdminScreen.route){
-                                    inclusive = true
-                                }
-                            }
-                        }){
-                            Icon(
-                                imageVector = Icons.Default.ArrowBackIosNew,
-                                contentDescription = "Back"
-                            )
-                        }
-                    })}
-        ) {
+                Header(navController,"Issue Book",Screen.AdminScreen.route)
+            }
+
+                ) {
             values->
             Column(
                 modifier = Modifier
@@ -296,11 +127,10 @@ fun IssueBookScreen(navController: NavController,context:Context){
                 Button(
                     onClick = {
                         coroutineScope.launch {
-
                         try {
 
-                            val issue_book = dbHelper.issueBook(bookId.toInt(), studentId.toInt())
-                            when (issue_book) {
+                            val issueBook = dbHelper.issueBook(bookId.toInt(), studentId.toInt())
+                            when (issueBook) {
                                 BookIssueStatus.Failed -> {
                                     Toast.makeText(context, "Failed to issue the book. Please try again later.", Toast.LENGTH_LONG).show()
                                     navController.navigate(Screen.AdminScreen.route)
@@ -359,7 +189,6 @@ fun IssueBookScreen(navController: NavController,context:Context){
     }
 
 }
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddBookScreen(navController: NavController, context: Context){
     val dbHelper:DBHelper =DBHelper(context)
@@ -377,21 +206,8 @@ fun AddBookScreen(navController: NavController, context: Context){
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             topBar = {
-                TopAppBar(title = {Text(text = "Add Book")},
-                    navigationIcon = {
-                        IconButton(onClick = {
-                            navController.navigate(Screen.AdminScreen.route){
-                                popUpTo(Screen.AdminScreen.route){
-                                    inclusive = true
-                                }
-                            }
-                        }){
-                            Icon(
-                                imageVector = Icons.Default.ArrowBackIosNew,
-                                contentDescription = "Back"
-                            )
-                        }
-                    })}
+                Header(navController,"Add Book",Screen.AdminScreen.route)
+            }
         ) {
                 values->
             Column(
@@ -453,13 +269,6 @@ fun AddBookScreen(navController: NavController, context: Context){
                                 }
 
                             }
-//                        catch (e: NumberFormatException){
-//                            Toast.makeText(
-//                                context,
-//                                "Book ID must be number!",
-//                                Toast.LENGTH_LONG
-//                            ).show()
-//                        }
                             catch (e: Error) {
                                 Toast.makeText(
                                     context,
@@ -476,7 +285,6 @@ fun AddBookScreen(navController: NavController, context: Context){
         }
     }
 }
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RemoveBookScreen(navController: NavController, context: Context){
     val dbHelper:DBHelper =DBHelper(context)
@@ -488,21 +296,8 @@ fun RemoveBookScreen(navController: NavController, context: Context){
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             topBar = {
-                TopAppBar(title = {Text(text = "Remove Book")},
-                    navigationIcon = {
-                        IconButton(onClick = {
-                            navController.navigate(Screen.AdminScreen.route){
-                                popUpTo(Screen.AdminScreen.route){
-                                    inclusive = true
-                                }
-                            }
-                        }){
-                            Icon(
-                                imageVector = Icons.Default.ArrowBackIosNew,
-                                contentDescription = "Back"
-                            )
-                        }
-                    })}
+                Header(navController,"Remove Book",Screen.AdminScreen.route)
+            }
         ) {
                 values->
             Column(

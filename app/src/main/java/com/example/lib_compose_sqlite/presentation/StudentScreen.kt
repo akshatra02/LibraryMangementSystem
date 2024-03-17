@@ -19,11 +19,13 @@ import androidx.navigation.NavController
 import com.example.lib_compose_sqlite.BookReturnStatus
 //import com.example.lib_compose_sqlite.BookStatus
 import com.example.lib_compose_sqlite.data.DBHelper
+import com.example.lib_compose_sqlite.presentation.components.BooksList
+import com.example.lib_compose_sqlite.presentation.components.CardComponent
+import com.example.lib_compose_sqlite.presentation.components.Header
 import com.example.lib_compose_sqlite.ui.theme.LIB_COMPOSE_SQLITETheme
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StudentScreen(navController: NavController ,studentId:Int){
     LIB_COMPOSE_SQLITETheme {
@@ -31,23 +33,7 @@ fun StudentScreen(navController: NavController ,studentId:Int){
             modifier = Modifier
                 .fillMaxSize(),
             topBar = {
-                TopAppBar(
-                    title = { Text(text = "Student") },
-                    navigationIcon = {
-                        IconButton(onClick = {
-                            navController.navigate(Screen.HomeScreen.route) {
-                                popUpTo(Screen.HomeScreen.route) {
-                                    inclusive = true
-                                }
-                            }
-                        }) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowBackIosNew,
-                                contentDescription = "Back"
-                            )
-                        }
-                    }
-                )
+                Header(navController,"Student",Screen.HomeScreen.route)
             }
         ) { values ->
             Column(
@@ -56,183 +42,36 @@ fun StudentScreen(navController: NavController ,studentId:Int){
                     .fillMaxSize()
                     .padding(values),
             ) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(120.dp),
-                    onClick = { navController.navigate("${Screen.StudentBooksScreen.route}/$studentId") },
-
-                    ) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "All Books",
-                            style = TextStyle(fontSize = 24.sp)
-                        )
-                    }
+                CardComponent(
+                    "All Books"
+                ) {
+                    navController.navigate("${Screen.StudentBooksScreen.route}/$studentId")
                 }
-                Spacer(modifier = Modifier.height(20.dp))
-
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(120.dp),
-
-                    onClick = {
-                        navController.navigate("${Screen.StudentMyBookScreen.route}/$studentId")
-                              },
-
-                    ) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "My Book",
-                            style = TextStyle(fontSize = 24.sp)
-
-                        )
-                    }               }
-                Spacer(modifier = Modifier.height(20.dp))
-
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(120.dp),
-
-                    onClick = {
-                        navController.navigate("${Screen.ReturnBookScreen.route}/$studentId")
-                              },
-
-                    ) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "Return Book ",
-                            style = TextStyle(fontSize = 24.sp)
-
-                        )
-                    }
+                CardComponent(
+                    "My Book"
+                ) {
+                    navController.navigate("${Screen.StudentMyBookScreen.route}/$studentId")
                 }
-                Spacer(modifier = Modifier.height(20.dp))
+                CardComponent(
+                    "Return Book"
+                ) {
+                    navController.navigate("${Screen.ReturnBookScreen.route}/$studentId")
+                }
             }
         }
     }
 }
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StudentBooksScreen(navController: NavController, context: Context,studentId:Int){
-    LIB_COMPOSE_SQLITETheme {
-        Scaffold(
-            modifier = Modifier
-                .fillMaxSize(),
-            topBar = {
-                TopAppBar(
-                    title = {Text(text = "Books")},
-                    navigationIcon = {
-                        IconButton(onClick = {
-                            navController.navigate("${Screen.StudentScreen.route}/$studentId"){
-                                popUpTo("${Screen.StudentScreen.route}/$studentId"){
-                                    inclusive = true
-                                }
-                            }
-                        }){
-                            Icon(
-                                imageVector = Icons.Default.ArrowBackIosNew,
-                                contentDescription = "Back"
-                            )
-                        }
-                    }
-                )
-            }
-        ) { values ->
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(values),
-            ) {
-                runBlocking {
-                    val dbHelper = DBHelper(context)
-                    dbHelper.getBooks().collect { viewBooks ->
-                        val booksSize = viewBooks.size
-                        if (booksSize > 0) {
-//                        delay(3000)
-                            items(booksSize) {
-                                val book = viewBooks[it]
-                                val (id, title, author, bookType, status) = book
-                                val bookStatus =
-                                    if (status == 0) "\uD83D\uDFE2 Available" else "\uD83D\uDD34 Reserved"
-
-                                Card(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                ) {
-                                    Text(
-                                        text = "${id} - ${title}",
-                                        style = TextStyle(fontSize = 24.sp)
-                                    )
-                                    Text(
-                                        text = "Author: ${author} - Type: ${bookType} "
-                                    )
-
-                                    Text(
-                                        text = bookStatus
-
-                                    )
-                                    Spacer(modifier = Modifier.height(20.dp))
-                                }
-
-                                Spacer(modifier = Modifier.height(20.dp))
-
-                            }
-                }else{
-                    items(1) {
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(30.dp)
-                        ) {
-                            Text(
-                                text = "No books are in the Library.",
-                                style = TextStyle(fontSize = 24.sp)
-                            )
-                        }
-                    }
-                }
-            }
-             }
-            }
-        }
-    }
+    BooksList(navController,context,"${Screen.StudentScreen.route}/$studentId")
 }
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StudentMyBookScreen(navController: NavController,context: Context,studentId: Int) {
     val dbHelper = DBHelper(context)
     LIB_COMPOSE_SQLITETheme {
         Scaffold(
             topBar = {
-                TopAppBar(
-                    title = { Text(text = "My Books") },
-                    navigationIcon = {
-                        IconButton(onClick = {
-                            navController.navigate("${Screen.StudentScreen.route}/$studentId") {
-                                popUpTo("${Screen.StudentScreen.route}/$studentId") {
-                                    inclusive = true
-                                }
-                            }
-                        }) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowBackIosNew,
-                                contentDescription = "Go Back"
-                            )
-                        }
-                    }
-                )
+                Header(navController,"My Books","${Screen.StudentScreen.route}/$studentId")
             }
         )
         { values ->
@@ -290,7 +129,6 @@ fun StudentMyBookScreen(navController: NavController,context: Context,studentId:
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReturnBookScreen(navController: NavController,context: Context,studentId: Int){
     var bookid by remember{
@@ -300,23 +138,7 @@ fun ReturnBookScreen(navController: NavController,context: Context,studentId: In
     LIB_COMPOSE_SQLITETheme {
         Scaffold(
             topBar = {
-                TopAppBar(
-                    title = { Text(text = "Return Books") },
-                    navigationIcon = {
-                        IconButton(onClick = {
-                            navController.navigate("${Screen.StudentScreen.route}/$studentId") {
-                                popUpTo("${Screen.StudentScreen.route}/$studentId") {
-                                    inclusive = true
-                                }
-                            }
-                        }) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowBackIosNew,
-                                contentDescription = "Go Back"
-                            )
-                        }
-                    }
-                )
+                Header(navController,"Return Book","${Screen.StudentScreen.route}/$studentId")
             }
         )
 
@@ -341,8 +163,6 @@ fun ReturnBookScreen(navController: NavController,context: Context,studentId: In
                     onClick = {
                         coroutineScope.launch {
                             val dbHelper = DBHelper(context)
-//                        try {
-
                             val returnbook = dbHelper.returnBook(bookid.toInt(), studentId)
                             when (returnbook) {
                                 BookReturnStatus.WrongBookId -> {
@@ -377,15 +197,6 @@ fun ReturnBookScreen(navController: NavController,context: Context,studentId: In
                                     Toast.LENGTH_LONG
                                 ).show()
                             }
-
-//                        }
-//                        catch (e: NumberFormatException){
-//                            Toast.makeText(
-//                                context,
-//                                "Book ID must be number!",
-//                                Toast.LENGTH_LONG
-//                            ).show()
-//                        }
                         }
                     }
                 )
