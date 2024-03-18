@@ -1,28 +1,26 @@
-package com.example.lib_compose_sqlite.presentation
+package com.example.lib_compose_sqlite.presentation.screens
 
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.lib_compose_sqlite.BookReturnStatus
+import com.example.lib_compose_sqlite.domain.BookReturnStatus
 //import com.example.lib_compose_sqlite.BookStatus
 import com.example.lib_compose_sqlite.data.DBHelper
+import com.example.lib_compose_sqlite.presentation.navigation.Screen
 import com.example.lib_compose_sqlite.presentation.components.BooksList
 import com.example.lib_compose_sqlite.presentation.components.CardComponent
 import com.example.lib_compose_sqlite.presentation.components.Header
-import com.example.lib_compose_sqlite.ui.theme.LIB_COMPOSE_SQLITETheme
+import com.example.lib_compose_sqlite.presentation.theme.LIB_COMPOSE_SQLITETheme
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
@@ -33,7 +31,7 @@ fun StudentScreen(navController: NavController ,studentId:Int){
             modifier = Modifier
                 .fillMaxSize(),
             topBar = {
-                Header(navController,"Student",Screen.HomeScreen.route)
+                Header(navController,"Student", Screen.HomeScreen.route)
             }
         ) { values ->
             Column(
@@ -94,7 +92,7 @@ fun StudentMyBookScreen(navController: NavController,context: Context,studentId:
                                         .fillMaxWidth()
                                 ) {
                                     Text(
-                                        text = "${bookId} $booksSize- ${title}",
+                                        text = "${bookId} - ${title}",
                                         style = TextStyle(fontSize = 24.sp)
                                     )
                                     Text(

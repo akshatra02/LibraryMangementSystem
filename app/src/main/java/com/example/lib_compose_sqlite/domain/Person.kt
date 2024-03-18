@@ -1,4 +1,4 @@
-package com.example.lib_compose_sqlite
+package com.example.lib_compose_sqlite.domain
 
 open class Person(val name :String,val password:String)
 
@@ -6,12 +6,12 @@ open class Person(val name :String,val password:String)
   val adminId: Int,
   val adminName: String,
   val adminPassword: String,
- ):Person(adminName,adminPassword)
+ ): Person(adminName,adminPassword)
  class Student(
   val studentId: Int,
   val studentName: String,
   val studentPassword:String
- ):Person(studentName,studentPassword)
+ ): Person(studentName,studentPassword)
 
 enum class Authentication{
  Success,

@@ -1,4 +1,4 @@
-package com.example.lib_compose_sqlite
+package com.example.lib_compose_sqlite.domain
 
 
 //enum class BookStatus{
@@ -18,7 +18,6 @@ data class Book(
     val bookType: BookType,
     val reservedStudentId: Int?,
 )
-//class BookItems():Book
 
 enum class BookReturnStatus(){
     WrongBookId,

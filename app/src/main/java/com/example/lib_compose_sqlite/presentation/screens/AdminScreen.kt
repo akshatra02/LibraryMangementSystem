@@ -1,40 +1,24 @@
-package com.example.lib_compose_sqlite.presentation
+package com.example.lib_compose_sqlite.presentation.screens
 
 import android.content.Context
-import android.database.sqlite.SQLiteConstraintException
 import android.widget.Toast
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.toLowerCase
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.example.lib_compose_sqlite.Book
-import com.example.lib_compose_sqlite.BookIssueStatus
+import com.example.lib_compose_sqlite.domain.BookIssueStatus
 //import com.example.lib_compose_sqlite.BookStatus
-import com.example.lib_compose_sqlite.BookType
+import com.example.lib_compose_sqlite.domain.BookType
 import com.example.lib_compose_sqlite.data.DBHelper
+import com.example.lib_compose_sqlite.presentation.navigation.Screen
 import com.example.lib_compose_sqlite.presentation.components.BooksList
 import com.example.lib_compose_sqlite.presentation.components.CardComponent
 import com.example.lib_compose_sqlite.presentation.components.Header
-import com.example.lib_compose_sqlite.ui.theme.LIB_COMPOSE_SQLITETheme
+import com.example.lib_compose_sqlite.presentation.theme.LIB_COMPOSE_SQLITETheme
 import kotlinx.coroutines.*
 @Composable
 fun AdminScreen(navController: NavController) {
@@ -43,7 +27,7 @@ fun AdminScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxSize(),
             topBar = {
-                Header(navController,"Admin",Screen.HomeScreen.route)
+                Header(navController,"Admin", Screen.HomeScreen.route)
             }
         ) { values ->
             Column(
@@ -79,7 +63,7 @@ fun AdminScreen(navController: NavController) {
 
 @Composable
 fun BooksScreen(navController: NavController,context: Context) {
-    BooksList(navController,context,Screen.AdminScreen.route)
+    BooksList(navController,context, Screen.AdminScreen.route)
 }
 
 @Composable
@@ -96,7 +80,7 @@ fun IssueBookScreen(navController: NavController,context:Context){
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             topBar = {
-                Header(navController,"Issue Book",Screen.AdminScreen.route)
+                Header(navController,"Issue Book", Screen.AdminScreen.route)
             }
 
                 ) {
@@ -206,7 +190,7 @@ fun AddBookScreen(navController: NavController, context: Context){
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             topBar = {
-                Header(navController,"Add Book",Screen.AdminScreen.route)
+                Header(navController,"Add Book", Screen.AdminScreen.route)
             }
         ) {
                 values->
@@ -296,7 +280,7 @@ fun RemoveBookScreen(navController: NavController, context: Context){
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             topBar = {
-                Header(navController,"Remove Book",Screen.AdminScreen.route)
+                Header(navController,"Remove Book", Screen.AdminScreen.route)
             }
         ) {
                 values->

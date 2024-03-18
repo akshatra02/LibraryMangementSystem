@@ -1,4 +1,4 @@
-package com.example.lib_compose_sqlite.presentation
+package com.example.lib_compose_sqlite.presentation.screens
 
 import android.content.Context
 import android.widget.Toast
@@ -11,7 +11,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
@@ -19,17 +18,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.NavType
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.navArgument
-import com.example.lib_compose_sqlite.Admin
-import com.example.lib_compose_sqlite.Authentication
-import com.example.lib_compose_sqlite.Person
-import com.example.lib_compose_sqlite.Student
+import com.example.lib_compose_sqlite.domain.Admin
+import com.example.lib_compose_sqlite.domain.Person
+import com.example.lib_compose_sqlite.domain.Student
 import com.example.lib_compose_sqlite.data.DBHelper
-import com.example.lib_compose_sqlite.ui.theme.LIB_COMPOSE_SQLITETheme
+import com.example.lib_compose_sqlite.presentation.navigation.Screen
+import com.example.lib_compose_sqlite.presentation.theme.LIB_COMPOSE_SQLITETheme
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)

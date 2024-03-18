@@ -13,8 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.lib_compose_sqlite.data.DBHelper
-import com.example.lib_compose_sqlite.presentation.Screen
-import com.example.lib_compose_sqlite.ui.theme.LIB_COMPOSE_SQLITETheme
+import com.example.lib_compose_sqlite.presentation.theme.LIB_COMPOSE_SQLITETheme
 import kotlinx.coroutines.runBlocking
 
 @OptIn(ExperimentalMaterial3Api::class)

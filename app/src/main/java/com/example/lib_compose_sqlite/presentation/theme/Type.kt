@@ -1,4 +1,4 @@
-package com.example.lib_compose_sqlite.ui.theme
+package com.example.lib_compose_sqlite.presentation.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

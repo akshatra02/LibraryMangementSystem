@@ -5,7 +5,7 @@ import android.database.sqlite.SQLiteConstraintException
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.widget.Toast
-import com.example.lib_compose_sqlite.*
+import com.example.lib_compose_sqlite.domain.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -60,11 +60,11 @@ class DBHelper(private val context: Context):
 //                "$BOOK_COLUMN_STATUS TEXT NOT NULL," +
                 "$RESERVED_STUDENT_ID INTEGER)")
         //Book entries
-        val b1 = Book(1, "Dravidian Lang tech", "Ramaswamy", BookType.Journal,null)
-        val b2 = Book(1, "Nine Tale Fox", "Wil Tal", BookType.Fiction,null)
-        val b3 = Book(1, "Forbes", "Kim", BookType.Magazine, null)
-        val b4 = Book(1, "M.S.Dhoni", "Aaradhiya", BookType.Biography, null)
-        val b5 = Book(1, "1990's Vision", "Rukmani", BookType.Historic,null)
+        val b1 = Book(0, "Dravidian Lang tech", "Ramaswamy", BookType.Journal,null)
+        val b2 = Book(0, "Nine Tale Fox", "Wil Tal", BookType.Fiction,null)
+        val b3 = Book(0, "Forbes", "Kim", BookType.Magazine, null)
+        val b4 = Book(0, "M.S.Dhoni", "Aaradhiya", BookType.Biography, null)
+        val b5 = Book(0, "1990's Vision", "Rukmani", BookType.Historic,null)
 
         val addBooksQuery1 = ("INSERT INTO $BOOK_TABLE_NAME ("+
                 "$BOOK_COLUMN_TITLE," +
@@ -276,7 +276,7 @@ class DBHelper(private val context: Context):
         }
     }
 
-    suspend fun addBook(booksTitle:String, booksAuthor:String,bookType:BookType): Long = withContext(Dispatchers.IO){
+    suspend fun addBook(booksTitle:String, booksAuthor:String,bookType: BookType): Long = withContext(Dispatchers.IO){
         try {
             val dbWrite = writableDatabase
             val values = ContentValues()

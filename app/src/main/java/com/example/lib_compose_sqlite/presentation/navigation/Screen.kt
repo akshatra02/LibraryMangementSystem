@@ -1,4 +1,4 @@
-package com.example.lib_compose_sqlite.presentation
+package com.example.lib_compose_sqlite.presentation.navigation
     sealed class Screen(val route:String) {
         object HomeScreen : Screen("home_screen")
         object AdminSignupScreen : Screen("admin_signup_screen")

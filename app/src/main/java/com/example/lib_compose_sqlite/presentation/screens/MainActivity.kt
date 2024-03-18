@@ -1,4 +1,4 @@
-package com.example.lib_compose_sqlite
+package com.example.lib_compose_sqlite.presentation.screens
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -6,22 +6,16 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navArgument
 import androidx.navigation.compose.rememberNavController
-import com.example.lib_compose_sqlite.presentation.*
-import com.example.lib_compose_sqlite.ui.theme.LIB_COMPOSE_SQLITETheme
-import kotlinx.coroutines.launch
-import java.time.LocalDate
+import com.example.lib_compose_sqlite.presentation.navigation.Screen
+import com.example.lib_compose_sqlite.presentation.theme.LIB_COMPOSE_SQLITETheme
 
 
 class MainActivity : ComponentActivity() {
