@@ -159,10 +159,10 @@ class DBHelper(private val context: Context):
     suspend fun getBooks(): Flow<List<Book>> = flow {
         try {
             val db = readableDatabase
-            val bookList = mutableListOf<Book>()
             val readBook = "SELECT * FROM $BOOK_TABLE_NAME"
             val cursor = db.rawQuery(readBook, null)
             while (cursor.moveToNext()) {
+                val bookList = mutableListOf<Book>()
                 val bid = cursor.getInt(cursor.getColumnIndexOrThrow(BOOK_COLUMN_ID))
                 val bookTitle = cursor.getString(cursor.getColumnIndexOrThrow(BOOK_COLUMN_TITLE))
                 val bookAuthor = cursor.getString(cursor.getColumnIndexOrThrow(BOOK_COLUMN_AUTHOR))
@@ -172,11 +172,11 @@ class DBHelper(private val context: Context):
 
                 val book = Book(bid, bookTitle, bookAuthor, bookType, reservedStudentId)
                 bookList.add(book)
+                emit(bookList)
             }
             cursor.close()
             db.close()
-            emit(bookList)
-        } catch (e: SQLiteConstraintException) {
+        } catch (e: Exception) {
             emit(emptyList())
         }
     }.flowOn(Dispatchers.IO)
@@ -285,7 +285,7 @@ class DBHelper(private val context: Context):
             values.put(BOOK_COLUMN_TYPE, bookType.name)
             values.put(RESERVED_STUDENT_ID, 0)
             return@withContext dbWrite.insert(BOOK_TABLE_NAME, null, values)
-        } catch (e: SQLiteConstraintException) {
+        } catch (e: Exception) {
             return@withContext 0L
         }
 
@@ -297,7 +297,7 @@ class DBHelper(private val context: Context):
             val selection = "$BOOK_COLUMN_ID=?"
             val selectionArgs = arrayOf(bookid.toString())
             return@withContext if (dbWrite.delete(BOOK_TABLE_NAME, selection, selectionArgs) > 0) true else false
-        } catch (e: SQLiteConstraintException) {
+        } catch (e: Exception) {
             return@withContext false
         }
     }
@@ -375,7 +375,6 @@ class DBHelper(private val context: Context):
                                 STUDENT_COLUMN_RESERVEDBOOKS_COUNT
                             )
                         )
-//                        if (studentBookCount > 0) {
                         val values = ContentValues().apply {
                             put(RESERVED_STUDENT_ID, 0)
                         }
@@ -419,7 +418,7 @@ class DBHelper(private val context: Context):
                 dbRead.close()
                 return@withContext BookReturnStatus.WrongBookId
             }
-        }catch (e: SQLiteConstraintException) {
+        }catch (e: Exception) {
             return@withContext BookReturnStatus.Failed
         }
        return@withContext BookReturnStatus.Failed

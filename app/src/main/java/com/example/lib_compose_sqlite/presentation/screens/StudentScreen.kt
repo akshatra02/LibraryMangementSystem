@@ -78,48 +78,65 @@ fun StudentMyBookScreen(navController: NavController,context: Context,studentId:
                     .fillMaxWidth()
                     .padding(values),
             ) {
-                runBlocking {
-                    dbHelper.getStudentMyBook(studentId).collect { viewBooks ->
-                        val booksSize = viewBooks.size
-                        if (booksSize > 0) {
-                            items(booksSize) {
-                                val book = viewBooks[it]
-                                val (bookId, title, author, bookType, status) = book
-                                val bookStatus =
-                                    if (status == 0) "\uD83D\uDFE2 Available" else "\uD83D\uDD34 Reserved"
-                                Card(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                ) {
-                                    Text(
-                                        text = "${bookId} - ${title}",
-                                        style = TextStyle(fontSize = 24.sp)
-                                    )
-                                    Text(
-                                        text = "Author: ${author} - Type: ${bookType} "
-                                    )
-                                    Text(
-                                        text = bookStatus
-                                    )
+                try {
+                    runBlocking {
+                        dbHelper.getStudentMyBook(studentId).collect { viewBooks ->
+                            val booksSize = viewBooks.size
+                            if (booksSize > 0) {
+                                items(booksSize) {
+                                    val book = viewBooks[it]
+                                    val (bookId, title, author, bookType, status) = book
+                                    val bookStatus =
+                                        if (status == 0) "\uD83D\uDFE2 Available" else "\uD83D\uDD34 Reserved"
+                                    Card(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                    ) {
+                                        Text(
+                                            text = "${bookId} - ${title}",
+                                            style = TextStyle(fontSize = 24.sp)
+                                        )
+                                        Text(
+                                            text = "Author: ${author} - Type: ${bookType} "
+                                        )
+                                        Text(
+                                            text = bookStatus
+                                        )
+                                        Spacer(modifier = Modifier.height(20.dp))
+                                    }
                                     Spacer(modifier = Modifier.height(20.dp))
                                 }
-                                Spacer(modifier = Modifier.height(20.dp))
-                            }
-                        }else {
-                            items(1) {
-                                Card(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(30.dp)
-                                ) {
-                                    Text(
-                                        text = "No books are reserved yet!",
-                                        style = TextStyle(fontSize = 24.sp)
-                                    )
+                            } else {
+                                items(1) {
+                                    Card(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(30.dp)
+                                    ) {
+                                        Text(
+                                            text = "No books are reserved yet!",
+                                            style = TextStyle(fontSize = 24.sp)
+                                        )
+                                    }
                                 }
                             }
                         }
                     }
+                }
+                catch (e : Exception){
+                    item(){
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(30.dp)
+                        ){
+                            Text(
+                                text = "There is an issue!",
+                                style = TextStyle(fontSize = 24.sp)
+                            )
+                        }
+                    }
+
                 }
             }
         }

@@ -22,6 +22,7 @@ import com.example.lib_compose_sqlite.domain.Admin
 import com.example.lib_compose_sqlite.domain.Person
 import com.example.lib_compose_sqlite.domain.Student
 import com.example.lib_compose_sqlite.data.DBHelper
+import com.example.lib_compose_sqlite.presentation.components.Header
 import com.example.lib_compose_sqlite.presentation.navigation.Screen
 import com.example.lib_compose_sqlite.presentation.theme.LIB_COMPOSE_SQLITETheme
 import kotlinx.coroutines.launch
@@ -86,23 +87,7 @@ fun AdminSignupScreen(navController: NavController,context: Context) {
             modifier = Modifier
                 .fillMaxSize(),
             topBar = {
-                TopAppBar(
-                    title = { Text(text = "Admin") },
-                    navigationIcon = {
-                        IconButton(onClick = {
-                            navController.navigate(Screen.AdminLoginScreen.route) {
-                                popUpTo(Screen.AdminLoginScreen.route) {
-                                    inclusive = true
-                                }
-                            }
-                        }) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowBackIosNew,
-                                contentDescription = "Back"
-                            )
-                        }
-                    }
-                )
+                Header(navController,"Admin",Screen.AdminLoginScreen.route)
             }
         ) { values ->
         Column(
@@ -201,23 +186,7 @@ fun AdminLoginScreen(navController: NavController,context: Context){
             modifier = Modifier
                 .fillMaxSize(),
             topBar = {
-                TopAppBar(
-                    title = {Text(text = "Admin")},
-                    navigationIcon = {
-                        IconButton(onClick = {
-                            navController.navigate(Screen.HomeScreen.route){
-                                popUpTo(Screen.HomeScreen.route){
-                                    inclusive = true
-                                }
-                            }
-                        }){
-                            Icon(
-                                imageVector = Icons.Default.ArrowBackIosNew,
-                                contentDescription = "Back"
-                            )
-                        }
-                    }
-                )
+                Header(navController,"Admin",Screen.HomeScreen.route)
             }
         ) { values ->
             Column(
@@ -333,24 +302,9 @@ fun StudentSignupScreen(navController: NavController,context: Context)
         Scaffold(
             modifier = Modifier
                 .fillMaxSize(),
-            topBar = {
-                TopAppBar(
-                    title = { Text(text = "Student") },
-                    navigationIcon = {
-                        IconButton(onClick = {
-                            navController.navigate(Screen.StudentLoginScreen.route) {
-                                popUpTo(Screen.StudentLoginScreen.route) {
-                                    inclusive = true
-                                }
-                            }
-                        }) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowBackIosNew,
-                                contentDescription = "Back"
-                            )
-                        }
-                    }
-                )
+            topBar =
+            {
+                Header(navController,"Student",Screen.StudentLoginScreen.route)
             }
         ) { values ->
             Column(
@@ -448,23 +402,7 @@ fun StudentLoginScreen(navController: NavController,context: Context) {
             modifier = Modifier
                 .fillMaxSize(),
             topBar = {
-                TopAppBar(
-                    title = { Text(text = "Student") },
-                    navigationIcon = {
-                        IconButton(onClick = {
-                            navController.navigate(Screen.HomeScreen.route) {
-                                popUpTo(Screen.HomeScreen.route) {
-                                    inclusive = true
-                                }
-                            }
-                        }) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowBackIosNew,
-                                contentDescription = "Back"
-                            )
-                        }
-                    }
-                )
+                Header(navController,"Student",Screen.HomeScreen.route)
             }
         ) { values ->
             Column(

@@ -69,13 +69,13 @@ fun BooksScreen(navController: NavController,context: Context) {
 @Composable
 fun IssueBookScreen(navController: NavController,context:Context){
     val dbHelper:DBHelper =DBHelper(context)
+    val coroutineScope = rememberCoroutineScope()
     var bookId by remember {
         mutableStateOf("")
     }
     var studentId by remember {
         mutableStateOf("")
     }
-    val coroutineScope = rememberCoroutineScope()
     LIB_COMPOSE_SQLITETheme {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
@@ -155,10 +155,10 @@ fun IssueBookScreen(navController: NavController,context:Context){
 
                             }
                         }
-                        catch (e: NumberFormatException){
+                        catch (e: Exception){
                             Toast.makeText(
                                 context,
-                                "Book ID and Student ID must be number!",
+                                "Failed to issue the book. Please try again later.",
                                 Toast.LENGTH_LONG
                             ).show()
                         }
@@ -253,7 +253,7 @@ fun AddBookScreen(navController: NavController, context: Context){
                                 }
 
                             }
-                            catch (e: Error) {
+                            catch (e: Exception) {
                                 Toast.makeText(
                                     context,
                                     "Failed to add book.",
