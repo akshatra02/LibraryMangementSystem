@@ -26,14 +26,8 @@ import kotlinx.coroutines.runBlocking
 
 @Composable
 fun StudentScreen(navController: NavController ,studentId:Int){
-    LIB_COMPOSE_SQLITETheme {
-        Scaffold(
-            modifier = Modifier
-                .fillMaxSize(),
-            topBar = {
-                Header(navController,"Student", Screen.HomeScreen.route)
-            }
-        ) { values ->
+    Header(navController,"Student", Screen.HomeScreen.route)
+    { values ->
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -58,7 +52,6 @@ fun StudentScreen(navController: NavController ,studentId:Int){
             }
         }
     }
-}
 @Composable
 fun StudentBooksScreen(navController: NavController, context: Context,studentId:Int){
     BooksList(navController,context,"${Screen.StudentScreen.route}/$studentId")
@@ -66,12 +59,7 @@ fun StudentBooksScreen(navController: NavController, context: Context,studentId:
 @Composable
 fun StudentMyBookScreen(navController: NavController,context: Context,studentId: Int) {
     val dbHelper = DBHelper(context)
-    LIB_COMPOSE_SQLITETheme {
-        Scaffold(
-            topBar = {
-                Header(navController,"My Books","${Screen.StudentScreen.route}/$studentId")
-            }
-        )
+    Header(navController,"My Books","${Screen.StudentScreen.route}/$studentId")
         { values ->
             LazyColumn(
                 modifier = Modifier
@@ -141,22 +129,13 @@ fun StudentMyBookScreen(navController: NavController,context: Context,studentId:
             }
         }
     }
-}
-
-
 @Composable
 fun ReturnBookScreen(navController: NavController,context: Context,studentId: Int){
     var bookid by remember{
         mutableStateOf("")
     }
     val coroutineScope = rememberCoroutineScope()
-    LIB_COMPOSE_SQLITETheme {
-        Scaffold(
-            topBar = {
-                Header(navController,"Return Book","${Screen.StudentScreen.route}/$studentId")
-            }
-        )
-
+    Header(navController,"Return Book","${Screen.StudentScreen.route}/$studentId")
         { values ->
             Column(
                 modifier = Modifier
@@ -222,4 +201,3 @@ fun ReturnBookScreen(navController: NavController,context: Context,studentId: In
             }
         }
     }
-}

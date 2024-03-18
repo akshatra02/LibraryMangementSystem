@@ -82,14 +82,8 @@ fun AdminSignupScreen(navController: NavController,context: Context) {
         mutableStateOf("")
     }
     val coroutineScope = rememberCoroutineScope()
-    LIB_COMPOSE_SQLITETheme {
-        Scaffold(
-            modifier = Modifier
-                .fillMaxSize(),
-            topBar = {
-                Header(navController,"Admin",Screen.AdminLoginScreen.route)
-            }
-        ) { values ->
+    Header(navController,"Admin",Screen.AdminLoginScreen.route)
+  { values ->
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -165,7 +159,7 @@ fun AdminSignupScreen(navController: NavController,context: Context) {
         }
     }
 }
-}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -180,15 +174,8 @@ fun AdminLoginScreen(navController: NavController,context: Context){
         mutableStateOf("")
     }
     val coroutineScope = rememberCoroutineScope()
-
-    LIB_COMPOSE_SQLITETheme {
-        Scaffold(
-            modifier = Modifier
-                .fillMaxSize(),
-            topBar = {
-                Header(navController,"Admin",Screen.HomeScreen.route)
-            }
-        ) { values ->
+    Header(navController,"Admin",Screen.HomeScreen.route)
+   { values ->
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -285,7 +272,7 @@ fun AdminLoginScreen(navController: NavController,context: Context){
             }
         }
     }
-}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StudentSignupScreen(navController: NavController,context: Context)
@@ -297,16 +284,8 @@ fun StudentSignupScreen(navController: NavController,context: Context)
         mutableStateOf("")
     }
     val coroutineScope = rememberCoroutineScope()
-
-    LIB_COMPOSE_SQLITETheme {
-        Scaffold(
-            modifier = Modifier
-                .fillMaxSize(),
-            topBar =
-            {
-                Header(navController,"Student",Screen.StudentLoginScreen.route)
-            }
-        ) { values ->
+    Header(navController,"Student",Screen.StudentLoginScreen.route)
+     { values ->
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -381,7 +360,6 @@ fun StudentSignupScreen(navController: NavController,context: Context)
             }
         }
     }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -397,14 +375,8 @@ fun StudentLoginScreen(navController: NavController,context: Context) {
     }
     val coroutineScope = rememberCoroutineScope()
 
-    LIB_COMPOSE_SQLITETheme {
-        Scaffold(
-            modifier = Modifier
-                .fillMaxSize(),
-            topBar = {
-                Header(navController,"Student",Screen.HomeScreen.route)
-            }
-        ) { values ->
+    Header(navController,"Student",Screen.HomeScreen.route)
+  { values ->
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -502,5 +474,4 @@ fun StudentLoginScreen(navController: NavController,context: Context) {
                 )
             }
     }
-}
 }

@@ -271,7 +271,7 @@ class DBHelper(private val context: Context):
                 return@withContext BookIssueStatus.InvalidInput
             }
         }
-        catch (e: SQLiteConstraintException) {
+        catch (e: Exception) {
             return@withContext BookIssueStatus.Failed
         }
     }

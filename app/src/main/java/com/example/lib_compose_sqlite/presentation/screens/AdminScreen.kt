@@ -22,14 +22,9 @@ import com.example.lib_compose_sqlite.presentation.theme.LIB_COMPOSE_SQLITETheme
 import kotlinx.coroutines.*
 @Composable
 fun AdminScreen(navController: NavController) {
-    LIB_COMPOSE_SQLITETheme {
-        Scaffold(
-            modifier = Modifier
-                .fillMaxSize(),
-            topBar = {
-                Header(navController,"Admin", Screen.HomeScreen.route)
-            }
-        ) { values ->
+    Header(navController,"Admin", Screen.HomeScreen.route)
+    {
+        values ->
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -57,9 +52,8 @@ fun AdminScreen(navController: NavController) {
                     navController.navigate(Screen.RemoveBookScreen.route)
                 }
             }
-            }
-        }
     }
+}
 
 @Composable
 fun BooksScreen(navController: NavController,context: Context) {
@@ -76,15 +70,9 @@ fun IssueBookScreen(navController: NavController,context:Context){
     var studentId by remember {
         mutableStateOf("")
     }
-    LIB_COMPOSE_SQLITETheme {
-        Scaffold(
-            modifier = Modifier.fillMaxSize(),
-            topBar = {
-                Header(navController,"Issue Book", Screen.AdminScreen.route)
-            }
-
-                ) {
-            values->
+    Header(navController,"Issue Book", Screen.AdminScreen.route)
+    {
+        values->
             Column(
                 modifier = Modifier
                     .padding(values)
@@ -171,8 +159,6 @@ fun IssueBookScreen(navController: NavController,context:Context){
 
         }
     }
-
-}
 @Composable
 fun AddBookScreen(navController: NavController, context: Context){
     val dbHelper:DBHelper =DBHelper(context)
@@ -186,14 +172,9 @@ fun AddBookScreen(navController: NavController, context: Context){
         mutableStateOf("")
     }
     val coroutineScope = rememberCoroutineScope()
-    LIB_COMPOSE_SQLITETheme {
-        Scaffold(
-            modifier = Modifier.fillMaxSize(),
-            topBar = {
-                Header(navController,"Add Book", Screen.AdminScreen.route)
-            }
-        ) {
-                values->
+        Header(navController,"Add Book", Screen.AdminScreen.route)
+        {
+            values->
             Column(
                 modifier = Modifier
                     .padding(values)
@@ -268,7 +249,6 @@ fun AddBookScreen(navController: NavController, context: Context){
 
         }
     }
-}
 @Composable
 fun RemoveBookScreen(navController: NavController, context: Context){
     val dbHelper:DBHelper =DBHelper(context)
@@ -276,14 +256,10 @@ fun RemoveBookScreen(navController: NavController, context: Context){
         mutableStateOf("")
     }
     val coroutineScope = rememberCoroutineScope()
-    LIB_COMPOSE_SQLITETheme {
-        Scaffold(
-            modifier = Modifier.fillMaxSize(),
-            topBar = {
-                Header(navController,"Remove Book", Screen.AdminScreen.route)
-            }
-        ) {
-                values->
+
+    Header(navController,"Remove Book", Screen.AdminScreen.route)
+    {
+        values->
             Column(
                 modifier = Modifier
                     .padding(values)
@@ -331,4 +307,3 @@ fun RemoveBookScreen(navController: NavController, context: Context){
 
         }
     }
-}
