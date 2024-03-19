@@ -23,8 +23,7 @@ import kotlinx.coroutines.*
 @Composable
 fun AdminScreen(navController: NavController) {
     Header(navController,"Admin", Screen.HomeScreen.route)
-    {
-        values ->
+    {values ->
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -99,8 +98,6 @@ fun IssueBookScreen(navController: NavController,context:Context){
                 Button(
                     onClick = {
                         coroutineScope.launch {
-                        try {
-
                             val issueBook = dbHelper.issueBook(bookId.toInt(), studentId.toInt())
                             when (issueBook) {
                                 BookIssueStatus.Failed -> {
@@ -142,14 +139,7 @@ fun IssueBookScreen(navController: NavController,context:Context){
                                 }
 
                             }
-                        }
-                        catch (e: Exception){
-                            Toast.makeText(
-                                context,
-                                "Failed to issue the book. Please try again later.",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
+
 
                 }
             }){
@@ -213,7 +203,6 @@ fun AddBookScreen(navController: NavController, context: Context){
                     onClick = {
                         coroutineScope.launch {
 
-                            try {
                                 if (booksTypePresent) {
                                     val booksTypeEntered = booksType.replaceFirstChar { it -> it.uppercaseChar() }
                                     val bookType = BookType.valueOf(booksTypeEntered)
@@ -232,15 +221,6 @@ fun AddBookScreen(navController: NavController, context: Context){
                                         .show()
                                     navController.navigate(Screen.AdminScreen.route)
                                 }
-
-                            }
-                            catch (e: Exception) {
-                                Toast.makeText(
-                                    context,
-                                    "Failed to add book.",
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            }
                         }
                     }){
                     Text("Add Book")
@@ -281,7 +261,6 @@ fun RemoveBookScreen(navController: NavController, context: Context){
                 Button(
                     onClick = {
                         coroutineScope.launch {
-                            try {
                                 if (dbHelper.removeBook(bookId.toInt())) {
                                     Toast.makeText(context, "Book - $bookId removed successfully!", Toast.LENGTH_LONG)
                                         .show()
@@ -290,15 +269,6 @@ fun RemoveBookScreen(navController: NavController, context: Context){
                                     Toast.makeText(context, "Failed: Check Book ID", Toast.LENGTH_LONG)
                                         .show()
                                 }
-                            } catch (e: Exception) {
-                                Toast.makeText(
-                                    context,
-                                    "Failed to remove book!",
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            }
-
-
                         }
                     }){
                     Text("Remove Book")

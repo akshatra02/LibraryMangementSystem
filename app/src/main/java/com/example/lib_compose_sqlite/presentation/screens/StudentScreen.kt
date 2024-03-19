@@ -66,7 +66,6 @@ fun StudentMyBookScreen(navController: NavController,context: Context,studentId:
                     .fillMaxWidth()
                     .padding(values),
             ) {
-                try {
                     runBlocking {
                         dbHelper.getStudentMyBook(studentId).collect { viewBooks ->
                             val booksSize = viewBooks.size
@@ -108,21 +107,7 @@ fun StudentMyBookScreen(navController: NavController,context: Context,studentId:
                                     }
                                 }
                             }
-                        }
-                    }
-                }
-                catch (e : Exception){
-                    item(){
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(30.dp)
-                        ){
-                            Text(
-                                text = "There is an issue!",
-                                style = TextStyle(fontSize = 24.sp)
-                            )
-                        }
+
                     }
 
                 }

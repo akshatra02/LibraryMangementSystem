@@ -18,14 +18,9 @@ import kotlinx.coroutines.runBlocking
 
 @Composable
 fun BooksList(navController:NavController, context: Context, route:String) {
-    LIB_COMPOSE_SQLITETheme {
-        Scaffold(
-            modifier = Modifier
-                .fillMaxSize(),
-            topBar = {
-                Header(navController,"Books",route)
-            }
-        ) { values ->
+
+    Header(navController,"Books",route)
+    { values ->
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -96,4 +91,3 @@ fun BooksList(navController:NavController, context: Context, route:String) {
             }
         }
     }
-}

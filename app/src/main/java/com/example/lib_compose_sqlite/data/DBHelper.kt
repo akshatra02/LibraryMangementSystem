@@ -14,12 +14,7 @@ import kotlinx.coroutines.withContext
 
 class DBHelper(private val context: Context):
     SQLiteOpenHelper(context, DATABASE_NAME,null, DATABASE_VERSION) {
-
-//    val DATABASE_NAME1 = "library"
-
     companion object {
-//        val DATABASE_NAME2 = "library"
-
         private const val DATABASE_NAME = "LibraryDatabse.db"
         private const val DATABASE_VERSION = 1
         private const val ADMIN_TABLE_NAME = "Admin"
@@ -57,7 +52,6 @@ class DBHelper(private val context: Context):
                 "$BOOK_COLUMN_TITLE TEXT NOT NULL," +
                 "$BOOK_COLUMN_AUTHOR TEXT NOT NULL," +
                 "$BOOK_COLUMN_TYPE TEXT NOT NULL," +
-//                "$BOOK_COLUMN_STATUS TEXT NOT NULL," +
                 "$RESERVED_STUDENT_ID INTEGER)")
         //Book entries
         val b1 = Book(0, "Dravidian Lang tech", "Ramaswamy", BookType.Journal,null)
@@ -126,7 +120,7 @@ class DBHelper(private val context: Context):
         val db = readableDatabase
         val selection = "$ADMIN_COLUMN_ID =?  AND $ADMIN_COLUMN_PASSWORD =?"
         val selectionArgs = arrayOf(admin.adminId.toString(), admin.adminPassword)
-        val cursor = db.query(false, ADMIN_TABLE_NAME, null, selection, selectionArgs, null, null, null, null, null)
+        val cursor = db.query(false, ADMIN_TABLE_NAME, arrayOf(ADMIN_COLUMN_ID,ADMIN_COLUMN_PASSWORD), selection, selectionArgs, null, null, null, null, null)
         val userExists = cursor.count > 0
         cursor.close()
         return@withContext userExists
@@ -163,14 +157,14 @@ class DBHelper(private val context: Context):
             val cursor = db.rawQuery(readBook, null)
             while (cursor.moveToNext()) {
                 val bookList = mutableListOf<Book>()
-                val bid = cursor.getInt(cursor.getColumnIndexOrThrow(BOOK_COLUMN_ID))
+                val bookId = cursor.getInt(cursor.getColumnIndexOrThrow(BOOK_COLUMN_ID))
                 val bookTitle = cursor.getString(cursor.getColumnIndexOrThrow(BOOK_COLUMN_TITLE))
                 val bookAuthor = cursor.getString(cursor.getColumnIndexOrThrow(BOOK_COLUMN_AUTHOR))
                 val bookTypeString = cursor.getString(cursor.getColumnIndexOrThrow(BOOK_COLUMN_TYPE))
                 val bookType = BookType.valueOf(bookTypeString)
                 val reservedStudentId = cursor.getInt(cursor.getColumnIndexOrThrow(RESERVED_STUDENT_ID))
 
-                val book = Book(bid, bookTitle, bookAuthor, bookType, reservedStudentId)
+                val book = Book(bookId, bookTitle, bookAuthor, bookType, reservedStudentId)
                 bookList.add(book)
                 emit(bookList)
             }
@@ -181,12 +175,12 @@ class DBHelper(private val context: Context):
         }
     }.flowOn(Dispatchers.IO)
 
-    suspend fun issueBook(bid: Int, student_id: Int): BookIssueStatus = withContext(Dispatchers.IO) {
+    suspend fun issueBook(bookId: Int, student_id: Int): BookIssueStatus = withContext(Dispatchers.IO) {
         try {
             val dbRead = readableDatabase
             val dbWrite = writableDatabase
             val selection = "$BOOK_COLUMN_ID =?"
-            val selectionArgs = arrayOf(bid.toString())
+            val selectionArgs = arrayOf(bookId.toString())
             val bookCursor =
                 dbRead.query(false, BOOK_TABLE_NAME, null, selection, selectionArgs, null, null, null, null)
             if (bookCursor.moveToFirst()) {
@@ -224,7 +218,7 @@ class DBHelper(private val context: Context):
                                 put(RESERVED_STUDENT_ID, student_id)
                             }
                             val bookStatusSelection = "$BOOK_COLUMN_ID = ?"
-                            val bookStatusSelectionArgs = arrayOf(bid.toString())
+                            val bookStatusSelectionArgs = arrayOf(bookId.toString())
                             dbWrite.update(
                                 BOOK_TABLE_NAME,
                                 bookStatusValues,
@@ -305,19 +299,14 @@ class DBHelper(private val context: Context):
     fun getStudentMyBook(studentid: Int): Flow<List<Book>> = flow {
         try {
             val dbRead = readableDatabase
-            val getBooksCursor = dbRead.rawQuery("SELECT * FROM $BOOK_TABLE_NAME", null)
-            while (getBooksCursor.moveToNext()) {
-                val reserveStudentId = getBooksCursor.getInt(
-                    getBooksCursor.getColumnIndexOrThrow(
-                        RESERVED_STUDENT_ID
+            val getBooksCursor = dbRead.rawQuery("SELECT * FROM $BOOK_TABLE_NAME WHERE $RESERVED_STUDENT_ID = $studentid", null)
+            if (getBooksCursor.count > 0) {
+                while (getBooksCursor.moveToNext()) {
+                    val bookId = getBooksCursor.getInt(
+                        getBooksCursor.getColumnIndexOrThrow(
+                            BOOK_COLUMN_ID
+                        )
                     )
-                )
-                val bookId = getBooksCursor.getInt(
-                    getBooksCursor.getColumnIndexOrThrow(
-                        BOOK_COLUMN_ID
-                    )
-                )
-                if (reserveStudentId == studentid) {
                     val books: MutableList<Book> = mutableListOf()
                     val bookTitle = getBooksCursor.getString(getBooksCursor.getColumnIndexOrThrow(BOOK_COLUMN_TITLE))
                     val bookAuthor =
@@ -333,20 +322,20 @@ class DBHelper(private val context: Context):
                     books.add(book)
                     emit(books)
                 }
+                getBooksCursor.close()
             }
-            getBooksCursor.close()
         }catch (e: Exception) {
             Toast.makeText(context, "Failed to retrieve the book. Please try again later.", Toast.LENGTH_LONG).show()
             emit(emptyList())
         }
     }.flowOn(Dispatchers.IO)
 
-   suspend fun returnBook(bid: Int, studentid: Int): BookReturnStatus = withContext(Dispatchers.IO){
+   suspend fun returnBook(bookId: Int, studentid: Int): BookReturnStatus = withContext(Dispatchers.IO){
         try {
             val dbRead = readableDatabase
             val dbWrite = writableDatabase
             val selection = "$BOOK_COLUMN_ID = ?"
-            val selectionArguments = arrayOf(bid.toString())
+            val selectionArguments = arrayOf(bookId.toString())
             val getReturnBookCursor =
                 dbRead.query(false, BOOK_TABLE_NAME, null, selection, selectionArguments, null, null, null, null)
             if (getReturnBookCursor.moveToFirst()) {

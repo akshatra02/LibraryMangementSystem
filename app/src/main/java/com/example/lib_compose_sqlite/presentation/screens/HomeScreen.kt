@@ -119,7 +119,6 @@ fun AdminSignupScreen(navController: NavController,context: Context) {
             Button(
                 onClick = {
                     coroutineScope.launch {
-                        try {
                             val admin = Person(adminName, adminPassword)
                             val addAdmin = dbhelper.addAdmin(admin)
                             if (addAdmin > 0) {
@@ -143,14 +142,6 @@ fun AdminSignupScreen(navController: NavController,context: Context) {
                                     .show()
 
                             }
-                        } catch (e: Exception) {
-                            Toast.makeText(
-                                context,
-                                "Admin Signup Failed",
-                                Toast.LENGTH_LONG
-                            )
-                                .show()
-                        }
                     }
                 }) {
                 Text("Signup")
@@ -220,7 +211,6 @@ fun AdminLoginScreen(navController: NavController,context: Context){
                 Button(
                     onClick = {
                         coroutineScope.launch {
-                        try {
                             val admin = Admin(adminId.toInt(), adminName, adminPassword)
                             when {
                                 (adminName == "" || adminPassword == "") -> {
@@ -247,14 +237,7 @@ fun AdminLoginScreen(navController: NavController,context: Context){
 
                                 }
                             }
-                        } catch (e: Exception) {
-                            Toast.makeText(
-                                context,
-                                "Admin Login Failed!",
-                                Toast.LENGTH_LONG
-                            )
-                                .show()
-                        }
+
                     }
                     }
                 )
@@ -318,8 +301,6 @@ fun StudentSignupScreen(navController: NavController,context: Context)
                 Button(
                     onClick = {
                         coroutineScope.launch {
-
-                        try {
                             val student = Person(studentName, studentPassword)
                             if (studentPassword == "" || studentName == "") {
                                 Toast.makeText(context, "Please enter both name and password .", Toast.LENGTH_LONG)
@@ -343,14 +324,6 @@ fun StudentSignupScreen(navController: NavController,context: Context)
                                     .show()
 
                             }
-                        } catch (e: Exception) {
-                            Toast.makeText(
-                                context,
-                                "Student SignUp Failed!",
-                                Toast.LENGTH_LONG
-                            )
-                                .show()
-                        }
                     }
                     }
                 ) {
@@ -422,7 +395,6 @@ fun StudentLoginScreen(navController: NavController,context: Context) {
                 Button(
                     onClick = {
                         coroutineScope.launch {
-                            try {
                                 val student = Student(studentId.toInt(), studentName, studentPassword)
                                 val studentIdLogin = dbhelper.loginStudent(student)
                                 if (studentName == "") {
@@ -450,14 +422,6 @@ fun StudentLoginScreen(navController: NavController,context: Context) {
                                         .show()
 
                                 }
-                            } catch (e: Exception) {
-                                Toast.makeText(
-                                    context,
-                                    "Student ID Login Failed!!",
-                                    Toast.LENGTH_LONG
-                                )
-                                    .show()
-                            }
                         }
                     }
                 )

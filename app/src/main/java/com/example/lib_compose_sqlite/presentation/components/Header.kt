@@ -12,7 +12,7 @@ import com.example.lib_compose_sqlite.presentation.theme.LIB_COMPOSE_SQLITETheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Header(navController: NavController,title: String, route: String,content : (PaddingValues) ->Unit) {
+fun Header(navController: NavController,title: String, route: String,content : @Composable (PaddingValues) ->Unit) {
     LIB_COMPOSE_SQLITETheme {
 
         Scaffold(
