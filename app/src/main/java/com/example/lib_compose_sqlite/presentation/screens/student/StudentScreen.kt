@@ -1,4 +1,4 @@
-package com.example.lib_compose_sqlite.presentation.screens
+package com.example.lib_compose_sqlite.presentation.screens.student
 
 import android.content.Context
 import android.widget.Toast
@@ -20,7 +20,6 @@ import com.example.lib_compose_sqlite.presentation.navigation.Screen
 import com.example.lib_compose_sqlite.presentation.components.BooksList
 import com.example.lib_compose_sqlite.presentation.components.CardComponent
 import com.example.lib_compose_sqlite.presentation.components.Header
-import com.example.lib_compose_sqlite.presentation.theme.LIB_COMPOSE_SQLITETheme
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
