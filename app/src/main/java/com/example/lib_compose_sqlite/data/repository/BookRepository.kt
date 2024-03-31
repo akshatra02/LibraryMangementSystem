@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface BookRepository{
     fun getBooks(): Flow<List<BookEntity>>
-    suspend fun addBook(book: BookEntity)
+    suspend fun addBook(book: BookEntity): Long
     suspend fun deleteBook(book: BookEntity)
 
 
@@ -14,7 +14,7 @@ interface BookRepository{
 class BookRepositoryImpl(private val bookDao: BookDao): BookRepository {
     override fun getBooks(): Flow<List<BookEntity>> = bookDao.getBooks()
 
-    override suspend fun addBook(book: BookEntity) = bookDao.addBook(book)
+    override suspend fun addBook(book: BookEntity): Long = bookDao.addBook(book)
 
     override suspend fun deleteBook(book: BookEntity) = bookDao.deleteBook(book)
 

@@ -28,50 +28,49 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.lib_compose_sqlite.data.local.books.BookEntity
-import com.example.lib_compose_sqlite.data.local.books.BookEvents
 import com.example.lib_compose_sqlite.data.local.books.BookState
 import com.example.lib_compose_sqlite.presentation.AppViewModelProvider
 import androidx.compose.foundation.lazy.items
 
 
 
-@Composable
-fun BookScreenRoom(
-    navigateToBookAdd: () -> Unit,
-    navController: NavController,
-    viewModel: BookViewModel = viewModel(
-        factory = AppViewModelProvider.Factory
-    )
-) {
-    val homeUiState by viewModel.bookUiState.collectAsState()
-    Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(onClick = navigateToBookAdd) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Add")
-            }
-        },
-        modifier = Modifier.padding(16.dp)
-    ) { paddingValues ->
-        LazyColumn(
-            contentPadding = paddingValues,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            val onEvent: (BookEvents) -> Unit = {}
-            items(items = homeUiState.bookItem) { book ->
-                bookItem(
-                    state = book,
-                    bookDelete = {viewModel.deleteBook(viewModel.bookUiState.value.bookItem[book.bookId])}
-                )
-
-            }
-
-
-        }
-    }
-}
+//@Composable
+//fun BookScreenRoom(
+//    navigateToBookAdd: () -> Unit,
+//    navController: NavController,
+//    viewModel: BookViewModel = viewModel(
+//        factory = AppViewModelProvider.Factory
+//    )
+//) {
+//    val homeUiState by viewModel.bookUiState.collectAsState()
+//    Scaffold(
+//        floatingActionButton = {
+//            FloatingActionButton(onClick = navigateToBookAdd) {
+//                Icon(imageVector = Icons.Default.Add, contentDescription = "Add")
+//            }
+//        },
+//        modifier = Modifier.padding(16.dp)
+//    ) { paddingValues ->
+//        LazyColumn(
+//            contentPadding = paddingValues,
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(8.dp),
+//            verticalArrangement = Arrangement.spacedBy(16.dp)
+//        ) {
+//            val onEvent: (BookEvents) -> Unit = {}
+//            items(items = homeUiState.bookItem) { book ->
+//                bookItem(
+//                    state = book,
+//                    bookDelete = {viewModel.deleteBook(viewModel.bookUiState.value.bookItem[book.bookId])}
+//                )
+//
+//            }
+//
+//
+//        }
+//    }
+//}
 
 @Composable
 fun bookItem(

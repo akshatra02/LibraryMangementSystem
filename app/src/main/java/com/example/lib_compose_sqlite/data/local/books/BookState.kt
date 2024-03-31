@@ -2,9 +2,23 @@ package com.example.lib_compose_sqlite.data.local.books
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import com.example.lib_compose_sqlite.domain.BookType
 
 data class BookState(
-    val books:List<BookEntity> = emptyList(),
-    val bookTitle:MutableState<String> = mutableStateOf(""),
-    val bookAuthor:MutableState<String> = mutableStateOf(""),
+    val bookDetails: BookDetails = BookDetails()
+)
+data class BookDetails(
+    val id: Int = 0,
+    val author: String = "",
+    val title: String = "",
+    val type: String = "",
+    val reservedStudentId: Int = 0,
+
+    )
+fun BookDetails.toBook(): BookEntity = BookEntity(
+    bookId = id,
+    bookAuthor = author,
+    bookTitle = title,
+    bookType = BookType.valueOf(type),
+    reservedStudentId = reservedStudentId
 )

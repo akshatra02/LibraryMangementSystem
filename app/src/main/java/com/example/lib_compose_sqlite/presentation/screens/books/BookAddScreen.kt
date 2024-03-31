@@ -13,10 +13,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.lib_compose_sqlite.data.local.books.BookEvents
 import com.example.lib_compose_sqlite.presentation.AppViewModelProvider
 import kotlinx.coroutines.launch
 
@@ -26,12 +26,13 @@ fun AddBookScreenRoom(
     viewModel: BookAddViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = {
                 coroutineScope.launch {
-viewModel.addBook()
+viewModel.addBook(navController, context)
                 }
                 navController.popBackStack()
             }) {
@@ -44,13 +45,13 @@ viewModel.addBook()
             modifier = Modifier.padding(paddingValues)
         ) {
             Text(text = "Title")
-            TextField(value = viewModel.bookUiState.bookItems.name, onValueChange = {
-                viewModel.updateUiState(viewModel.bookUiState.bookItems.copy(name = it))
+            TextField(value = viewModel.bookUiState.bookDetails.title, onValueChange = {
+                viewModel.updateUiState(viewModel.bookUiState.bookDetails.copy(title = it))
             })
             Text(text = "Author")
 
-            TextField(value = viewModel.bookUiState.bookItems.title, onValueChange = {
-                viewModel.updateUiState(viewModel.bookUiState.bookItems.copy(title = it))
+            TextField(value = viewModel.bookUiState.bookDetails.author, onValueChange = {
+                viewModel.updateUiState(viewModel.bookUiState.bookDetails.copy(author = it))
 
             })
 

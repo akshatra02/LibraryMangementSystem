@@ -11,6 +11,7 @@ enum class BookType{
     Magazine,
     Journal,
 }
+
 data class Book(
     val bookId: Int,
     val title: String,
