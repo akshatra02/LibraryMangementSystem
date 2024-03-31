@@ -1,4 +1,4 @@
-package com.example.lib_compose_sqlite.data.books
+package com.example.lib_compose_sqlite.data.local.books
 
 sealed interface BookEvents {
     data class deleteBook(val book : BookEntity) : BookEvents

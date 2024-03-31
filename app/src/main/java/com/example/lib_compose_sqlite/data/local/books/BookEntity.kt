@@ -1,4 +1,4 @@
-package com.example.lib_compose_sqlite.data.books
+package com.example.lib_compose_sqlite.data.local.books
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -10,6 +10,6 @@ data class BookEntity(
     @ColumnInfo(name = "book_author") val bookAuthor: String,
 
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "book_id")val bookId: Int? =null,
+    @ColumnInfo(name = "book_id")val bookId: Int = 0,
 )
 

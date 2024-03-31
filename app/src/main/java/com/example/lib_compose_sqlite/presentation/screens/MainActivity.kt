@@ -12,6 +12,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavType
@@ -31,7 +32,8 @@ import com.example.lib_compose_sqlite.presentation.screens.student.StudentBooksS
 import com.example.lib_compose_sqlite.presentation.screens.student.StudentMyBookScreen
 import com.example.lib_compose_sqlite.presentation.screens.student.StudentScreen
 import com.example.lib_compose_sqlite.presentation.theme.LIB_COMPOSE_SQLITETheme
-import com.example.lib_compose_sqlite.data.books.BookDatabase
+import com.example.lib_compose_sqlite.data.local.LibraryDatabase
+import com.example.lib_compose_sqlite.presentation.navigation.LibraryNavHost
 import com.example.lib_compose_sqlite.presentation.screens.books.AddBookScreenRoom
 import com.example.lib_compose_sqlite.presentation.screens.books.BookScreenRoom
 import com.example.lib_compose_sqlite.presentation.screens.books.BookViewModel
@@ -40,22 +42,6 @@ import com.example.lib_compose_sqlite.presentation.screens.books.BookViewModel
 
 
 class MainActivity : ComponentActivity() {
-    private val db by lazy {
-        Room.databaseBuilder(
-            applicationContext,
-            BookDatabase::class.java,
-            name = "book.db"
-        ).build()
-    }
-    private val viewModel by viewModels<BookViewModel>(
-        factoryProducer = {
-            object : ViewModelProvider.Factory{
-                override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                    return BookViewModel(db.bookDao) as T
-                }
-            }
-        }
-    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,85 +49,9 @@ class MainActivity : ComponentActivity() {
             LIB_COMPOSE_SQLITETheme {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-//                    Navigation()
-                    val state by viewModel.state.collectAsState()
-                    val navController = rememberNavController()
-                    NavHost(navController = navController, startDestination = "BookScreenRoom"){
-                        composable("BookScreenRoom"){
-                            BookScreenRoom(state = state, navController = navController, onEvent = viewModel::onEvent )
-                        }
-                        composable("AddBookScreenRoom"){
-                            AddBookScreenRoom(state = state, navController = navController, onEvent = viewModel::onEvent )
-                        }
-                    }
+                    LibraryNavHost()
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun Navigation(){
-    val navController = rememberNavController()
-    NavHost(
-        navController = navController,
-        startDestination = Screen.HomeScreen.route
-    ) {
-
-        composable(route = Screen.HomeScreen.route){
-            HomeScreen(navController)
-        }
-        composable(route = Screen.AdminLoginScreen.route){
-            AdminLoginScreen(navController, LocalContext.current)
-        }
-        composable(route = Screen.AdminSignupScreen.route){
-            AdminSignupScreen(navController, LocalContext.current)
-        }
-        composable(route = Screen.AdminScreen.route){
-            AdminScreen(navController)
-        }
-        composable(route = Screen.StudentLoginScreen.route){
-            StudentLoginScreen(navController, LocalContext.current)
-        }
-        composable(route = Screen.StudentSignupScreen.route){
-            StudentSignupScreen(navController, LocalContext.current)
-        }
-        composable(route = Screen.BooksScreen.route){
-            BooksScreen(navController, LocalContext.current)
-        }
-        composable(route = Screen.IssueBookScreen.route){
-            IssueBookScreen(navController, LocalContext.current)
-        }
-        composable(route = Screen.AddBookScreen.route){
-            AddBookScreen(navController, LocalContext.current)
-        }
-        composable(route = Screen.RemoveBookScreen.route){
-            RemoveBookScreen(navController, LocalContext.current)
-        }
-        composable(
-            route = "${Screen.StudentScreen.route}/{studentId}",
-            arguments = listOf(navArgument("studentId") { type = NavType.IntType })
-        ) { backStackEntry ->
-            val studentId = backStackEntry.arguments?.getInt("studentId") ?: -1
-            StudentScreen(navController, studentId)
-        }
-        composable(route = "${Screen.StudentBooksScreen.route}/{studentId}",
-            arguments = listOf(navArgument("studentId"){type = NavType.IntType})
-        ){ backStackEntry ->
-            val studentId = backStackEntry.arguments?.getInt("studentId") ?: -1
-            StudentBooksScreen(navController, LocalContext.current,studentId)
-        }
-        composable(route = "${Screen.StudentMyBookScreen.route}/{studentId}",
-            arguments = listOf(navArgument("studentId"){type = NavType.IntType})
-        ){ backStackEntry ->
-            val studentId = backStackEntry.arguments?.getInt("studentId") ?: -1
-            StudentMyBookScreen(navController, LocalContext.current,studentId)
-        }
-        composable(route="${Screen.ReturnBookScreen.route}/{studentId}",
-            arguments = listOf(navArgument("studentId"){type = NavType.IntType})
-        ){ backStackEntry ->
-            val studentId = backStackEntry.arguments?.getInt("studentId") ?: -1
-            ReturnBookScreen(navController, LocalContext.current,studentId)
         }
     }
 }

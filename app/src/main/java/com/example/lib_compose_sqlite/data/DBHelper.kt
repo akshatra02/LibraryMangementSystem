@@ -1,7 +1,7 @@
 package com.example.lib_compose_sqlite.data
+
 import android.content.ContentValues
 import android.content.Context
-import android.database.sqlite.SQLiteConstraintException
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.widget.Toast
@@ -17,6 +17,7 @@ class DBHelper(private val context: Context):
     companion object {
         private const val DATABASE_NAME = "LibraryDatabse.db"
         private const val DATABASE_VERSION = 1
+
         private const val ADMIN_TABLE_NAME = "Admin"
         private const val ADMIN_COLUMN_ID = "id"
         private const val ADMIN_COLUMN_NAME = "username"
@@ -86,14 +87,14 @@ class DBHelper(private val context: Context):
                 "$BOOK_COLUMN_TYPE," +
                 "$RESERVED_STUDENT_ID) VALUES (\"${b5.title}\",\"${b5.author}\",\"${b5.bookType}\",\"${b5.reservedStudentId}\")")
 
-        db?.execSQL(createAdminTableQuery)
-        db?.execSQL(createStudentTableQuery)
-        db?.execSQL(createBookTableQuery)
-        db?.execSQL(addBooksQuery1)
-        db?.execSQL(addBooksQuery2)
-        db?.execSQL(addBooksQuery3)
-        db?.execSQL(addBooksQuery4)
-        db?.execSQL(addBooksQuery5)
+//        db?.execSQL(createAdminTableQuery)
+//        db?.execSQL(createStudentTableQuery)
+//        db?.execSQL(createBookTableQuery)
+//        db?.execSQL(addBooksQuery1)
+//        db?.execSQL(addBooksQuery2)
+//        db?.execSQL(addBooksQuery3)
+//        db?.execSQL(addBooksQuery4)
+//        db?.execSQL(addBooksQuery5)
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
@@ -120,7 +121,10 @@ class DBHelper(private val context: Context):
         val db = readableDatabase
         val selection = "$ADMIN_COLUMN_ID =?  AND $ADMIN_COLUMN_PASSWORD =?"
         val selectionArgs = arrayOf(admin.adminId.toString(), admin.adminPassword)
-        val cursor = db.query(false, ADMIN_TABLE_NAME, arrayOf(ADMIN_COLUMN_ID,ADMIN_COLUMN_PASSWORD), selection, selectionArgs, null, null, null, null, null)
+        val cursor = db.query(false, ADMIN_TABLE_NAME, arrayOf(
+            ADMIN_COLUMN_ID,
+            ADMIN_COLUMN_PASSWORD
+        ), selection, selectionArgs, null, null, null, null, null)
         val userExists = cursor.count > 0
         cursor.close()
         return@withContext userExists
@@ -162,7 +166,9 @@ class DBHelper(private val context: Context):
                 val bookAuthor = cursor.getString(cursor.getColumnIndexOrThrow(BOOK_COLUMN_AUTHOR))
                 val bookTypeString = cursor.getString(cursor.getColumnIndexOrThrow(BOOK_COLUMN_TYPE))
                 val bookType = BookType.valueOf(bookTypeString)
-                val reservedStudentId = cursor.getInt(cursor.getColumnIndexOrThrow(RESERVED_STUDENT_ID))
+                val reservedStudentId = cursor.getInt(cursor.getColumnIndexOrThrow(
+                    RESERVED_STUDENT_ID
+                ))
 
                 val book = Book(bookId, bookTitle, bookAuthor, bookType, reservedStudentId)
                 bookList.add(book)
@@ -184,7 +190,9 @@ class DBHelper(private val context: Context):
             val bookCursor =
                 dbRead.query(false, BOOK_TABLE_NAME, null, selection, selectionArgs, null, null, null, null)
             if (bookCursor.moveToFirst()) {
-                val reserveStudentId = bookCursor.getInt(bookCursor.getColumnIndexOrThrow(RESERVED_STUDENT_ID))
+                val reserveStudentId = bookCursor.getInt(bookCursor.getColumnIndexOrThrow(
+                    RESERVED_STUDENT_ID
+                ))
                 if (reserveStudentId == 0) {
                     val studentSelection = "$STUDENT_COLUMN_ID =?"
                     val studentSelectionArgs = arrayOf(student_id.toString())
@@ -308,10 +316,16 @@ class DBHelper(private val context: Context):
                         )
                     )
                     val books: MutableList<Book> = mutableListOf()
-                    val bookTitle = getBooksCursor.getString(getBooksCursor.getColumnIndexOrThrow(BOOK_COLUMN_TITLE))
+                    val bookTitle = getBooksCursor.getString(getBooksCursor.getColumnIndexOrThrow(
+                        BOOK_COLUMN_TITLE
+                    ))
                     val bookAuthor =
-                        getBooksCursor.getString(getBooksCursor.getColumnIndexOrThrow(BOOK_COLUMN_AUTHOR))
-                    val bookType = getBooksCursor.getString(getBooksCursor.getColumnIndexOrThrow(BOOK_COLUMN_TYPE))
+                        getBooksCursor.getString(getBooksCursor.getColumnIndexOrThrow(
+                            BOOK_COLUMN_AUTHOR
+                        ))
+                    val bookType = getBooksCursor.getString(getBooksCursor.getColumnIndexOrThrow(
+                        BOOK_COLUMN_TYPE
+                    ))
                     val book = Book(
                         bookId,
                         bookTitle,

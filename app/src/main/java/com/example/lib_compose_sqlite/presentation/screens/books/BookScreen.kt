@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
@@ -23,20 +24,29 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.lib_compose_sqlite.data.books.BookEvents
-import com.example.lib_compose_sqlite.data.books.BookState
+import com.example.lib_compose_sqlite.data.local.books.BookEntity
+import com.example.lib_compose_sqlite.data.local.books.BookEvents
+import com.example.lib_compose_sqlite.data.local.books.BookState
+import com.example.lib_compose_sqlite.presentation.AppViewModelProvider
+import androidx.compose.foundation.lazy.items
+
 
 
 @Composable
-fun BookScreenRoom(state: BookState, navController: NavController, onEvent: (BookEvents) -> Unit) {
+fun BookScreenRoom(
+    navigateToBookAdd: () -> Unit,
+    navController: NavController,
+    viewModel: BookViewModel = viewModel(
+        factory = AppViewModelProvider.Factory
+    )
+) {
+    val homeUiState by viewModel.bookUiState.collectAsState()
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = {
-                state.bookTitle.value = ""
-                state.bookAuthor.value = ""
-                navController.navigate("AddBookScreenRoom")
-            }) {
+            FloatingActionButton(onClick = navigateToBookAdd) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = "Add")
             }
         },
@@ -49,8 +59,12 @@ fun BookScreenRoom(state: BookState, navController: NavController, onEvent: (Boo
                 .padding(8.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            items(state.books.size) { index ->
-                bookItem(state = state, index = index, onEvent = onEvent)
+            val onEvent: (BookEvents) -> Unit = {}
+            items(items = homeUiState.bookItem) { book ->
+                bookItem(
+                    state = book,
+                    bookDelete = {viewModel.deleteBook(viewModel.bookUiState.value.bookItem[book.bookId])}
+                )
 
             }
 
@@ -61,64 +75,21 @@ fun BookScreenRoom(state: BookState, navController: NavController, onEvent: (Boo
 
 @Composable
 fun bookItem(
-    state: BookState,
-    index: Int,
-    onEvent: (BookEvents) -> Unit
+    state: BookEntity,
+    bookDelete: () -> Unit ={}
 ) {
     Row(modifier = Modifier.fillMaxWidth())
     {
         Column(Modifier.weight(1f))
         {
-            Text(text = state.books[index].bookTitle, fontSize = 20.sp)
-            Text(text = state.books[index].bookAuthor, fontSize = 16.sp)
+            Text(text = state.bookTitle, fontSize = 20.sp)
+            Text(text = state.bookAuthor, fontSize = 16.sp)
             Text(text = "book.bookAutho")
         }
-        IconButton(onClick =
-        {
-            onEvent(BookEvents.deleteBook(state.books[index]))
-        })
+        IconButton(onClick =bookDelete)
         {
             Icon(imageVector = Icons.Default.Delete, contentDescription = "DeleteBook")
         }
     }
 }
 
-@Composable
-fun AddBookScreenRoom(
-    navController: NavController,
-    state: BookState,
-    onEvent: (BookEvents) -> Unit
-) {
-    Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(onClick = {
-                onEvent(
-                    BookEvents.SaveBook(
-                        title = state.bookTitle.value,
-                        author = state.bookTitle.value
-                    )
-                )
-                navController.popBackStack()
-            }) {
-                Icon(imageVector = Icons.Default.Save, contentDescription = "Save")
-            }
-        },
-        modifier = Modifier.padding(16.dp)
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier.padding(paddingValues)
-        ) {
-            Text(text = "Title")
-            TextField(value = state.bookTitle.value, onValueChange = {
-                state.bookTitle.value = it
-            })
-            Text(text = "Author")
-
-            TextField(value = state.bookAuthor.value, onValueChange = {
-                state.bookAuthor.value = it
-            })
-
-        }
-    }
-
-}

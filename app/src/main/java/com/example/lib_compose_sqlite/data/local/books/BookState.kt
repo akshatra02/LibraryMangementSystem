@@ -1,4 +1,4 @@
-package com.example.lib_compose_sqlite.data.books
+package com.example.lib_compose_sqlite.data.local.books
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
