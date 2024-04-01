@@ -3,7 +3,7 @@
 
 
 ## Overview
-The Library Management System (LMS) is a software application designed to automate library operations, including book management and user interactions. It serves both administrators and students, providing features such as browsing books, borrowing books, and managing reservations. The system is built using Kotlin programming language, Jetpack Compose for UI development, and SQLite for data storage.
+The Library Management System (LMS) is a software application designed to automate library operations, including book management and user interactions. It serves both administrators and students, providing features such as browsing books, borrowing books, and managing reservations. The system is built using Kotlin programming language, Jetpack Compose for UI development, and Room Database for data storage with clean architecture.
 
 ## Technologies Used
 - `Kotlin`: Main programming language for backend logic and business logic implementation.
@@ -22,6 +22,69 @@ The Library Management System (LMS) is a software application designed to automa
 - **View Reserved Books:** Access and view their own reserved books.
 - **Book Handling:** Return borrowed books once finished reading.
 
+## Directory Structure
+- Data
+  - local
+    - admin
+      - AdminDao
+      - AdminEntity
+      - AdminState
+    - books
+       - BooksDao
+       - BookEntity
+       - BookState 
+    - students
+       - StudentsDao
+       - StudentsEntity
+       - StudentsState
+    - AppContainer
+    - LibraryDatabase
+  - repository
+    - AdminRepository
+    - BookRepository
+    - StudentRepository
+- domain
+  - Books
+- presentation
+  - components
+    - CardComponent
+    - Header
+    - Toast
+  - navigation
+     - Navigation
+     - Screen
+  - screens
+     - admin
+       - AdminScreen
+       - AdminViewModel
+     - books
+       - addBook
+         - BookAddScreen
+         - BookAddViewModel
+       - bookList
+          - BookListScreen
+          - BookListViewModel
+       - issueBook
+          - IssueBookScreen
+          - IssueBookViewModel
+       - removeBook
+          - RemoveScreen
+          - RemoveViewModel
+       - returnBook
+          - ReturnBookScreen
+          - ReturnBookViewModel
+       - studentBooks
+          - StudentBooksScreen
+          - StudentBooksViewModel
+     - student
+       - StudentScreen
+       - StudentViewModel
+     - HomeScreen
+     - MainActivity
+  - theme
+     - AppViewModelProvider
+- LibraryApplication
+- 
 ## Components
 ### User Interface (UI)
 - Designed using Jetpack Compose, providing a modern and intuitive user experience.
