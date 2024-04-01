@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.lib_compose_sqlite.R
-import com.example.lib_compose_sqlite.data.DBHelper
 import com.example.lib_compose_sqlite.presentation.AppViewModelProvider
 import com.example.lib_compose_sqlite.presentation.components.Header
 import com.example.lib_compose_sqlite.presentation.navigation.Screen
@@ -215,7 +214,6 @@ fun StudentSignupScreen(
                 .padding(values),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val dbhelper: DBHelper = DBHelper(context)
             Text(text = stringResource(R.string.student_sign_up_page))
             Spacer(modifier = Modifier.height(20.dp))
 

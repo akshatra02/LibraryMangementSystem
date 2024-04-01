@@ -8,7 +8,7 @@ The Library Management System (LMS) is a software application designed to automa
 ## Technologies Used
 - `Kotlin`: Main programming language for backend logic and business logic implementation.
 - `Jetpack Compose`: Modern UI toolkit for building native Android apps with declarative UI.
-- `SQLite`: Lightweight relational database management system for local data storage.
+- `Room Database`: Modern abstraction layer over SQLite for robust local data storage in Android apps.
 
 ## Functionality
 > For Admins
@@ -32,11 +32,11 @@ The Library Management System (LMS) is a software application designed to automa
 - Manages book records, user records, borrowing, and updates availability status.
 
 ### Data Storage
-- Utilizes SQLite database for storing book records, user records, borrowing history, etc.
-- Tables include books, users, borrowed_books, etc.
+- Leverages Room Database, an abstraction layer over SQLite, to facilitate efficient storage of book records, user data, and borrowing history.
+- Employs entities such as BookEntity, UserEntity, and BorrowedBookEntity, annotated with @Entity, to represent tables like books, users, and borrowed_books respectively, ensuring structured data storage.
 
 ### Database Structure
-The SQLite database consists of three tables:
+The Room database consists of three tables:
 1. Admin: Stores information about administrators (admin_id, username, password).
 2. Student: Stores information about students (student_id, username ).
 3. Books: Stores information about books (book_id, title, author,type, availability).
@@ -51,10 +51,11 @@ The SQLite database consists of three tables:
   ```gradle 
     implementation ("androidx.navigation:navigation-compose:2.4.0-alpha04")
   ```
-- **SQLite**: A lightweight relational database management system.
-  ```gradle 
-    import android.database.sqlite.SQLiteDatabase
-    import android.database.sqlite.SQLiteOpenHelper
+- **Room**: A lightweight relational database management system.
+  ```gradle
+    implementation("androidx.room:room-ktx:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
+    implementation("androidx.room:room-runtime:2.6.1")
   ```
 -  **Coroutines**: Kotlin's native support for asynchronous programming.
   ```gradle 
@@ -108,5 +109,5 @@ The SQLite database consists of three tables:
 ![Student Page](app/images/StudentPage.png)
 ![Student Reserved books](app/images/StudentReservedBooks.png)
 ## Conclusion
-The Library Management System (LMS) simplifies library operations, enhances user experience, and improves efficiency for administrators and students alike. Leveraging Kotlin, Jetpack Compose, and SQLite, the system offers a modern and robust solution for managing library resources effectively.
+The Library Management System (LMS) simplifies library operations, enhances user experience, and improves efficiency for administrators and students alike. Leveraging Kotlin, Jetpack Compose, and Room database, the system offers a modern and robust solution for managing library resources effectively.
 
