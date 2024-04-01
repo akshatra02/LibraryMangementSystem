@@ -1,4 +1,4 @@
-package com.example.lib_compose_sqlite.presentation.screens.books
+package com.example.lib_compose_sqlite.presentation.screens.books.returnBook
 
 import android.content.Context
 import android.widget.Toast
@@ -8,6 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.example.lib_compose_sqlite.R
 import com.example.lib_compose_sqlite.data.local.books.BookDetails
 import com.example.lib_compose_sqlite.data.repository.BookRepository
 import com.example.lib_compose_sqlite.data.repository.StudentRepository
@@ -40,15 +41,18 @@ class ReturnBookViewModel(
                 student.studentReservedBookCount - 1
                 val updateStudent = studentRepository.updateStudent(student)
                 if (updateBook > 0 && updateStudent > 0) {
-                    Toast.makeText(context, "Book Returned successfully!", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context,
+                        context.getString(R.string.book_returned_successfully), Toast.LENGTH_LONG).show()
                     navController.navigate("${Screen.StudentScreen.route}/$studentId")
                 } else {
-                    Toast.makeText(context, "Failed to return book", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context,
+                        context.getString(R.string.failed_to_return_book), Toast.LENGTH_LONG).show()
                     navController.navigate("${Screen.StudentScreen.route}/$studentId")
                 }
             }
             else{
-                Toast.makeText(context, "The book is not reserved by the student", Toast.LENGTH_LONG).show()
+                Toast.makeText(context,
+                    context.getString(R.string.the_book_is_not_reserved_by_the_student), Toast.LENGTH_LONG).show()
                 navController.navigate("${Screen.StudentScreen.route}/$studentId")
 
             }

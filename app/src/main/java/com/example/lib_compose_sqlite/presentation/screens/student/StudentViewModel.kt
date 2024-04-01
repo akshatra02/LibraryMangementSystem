@@ -8,6 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.example.lib_compose_sqlite.R
 import com.example.lib_compose_sqlite.data.local.admin.AdminDetails
 import com.example.lib_compose_sqlite.data.local.admin.AdminState
 import com.example.lib_compose_sqlite.data.local.admin.toAdminEntity
@@ -45,7 +46,7 @@ class StudentViewModel(
                 studentRepository.addStudent(studentUiState.studentDetails.toStudentEntity())
             Toast.makeText(
                 context,
-                "Student - $student Signed Up successfully!",
+                context.getString(R.string.student_signed_up_successfully, student),
                 Toast.LENGTH_LONG
             ).show()
             navController.navigate(Screen.StudentLoginScreen.route)
@@ -64,11 +65,13 @@ class StudentViewModel(
             )
             if (student != null) {
                 // Login successful
-                Toast.makeText(context, "Welcome ${studentDetails.name}", Toast.LENGTH_LONG).show()
+                Toast.makeText(context,
+                    context.getString(R.string.welcome, studentDetails.name), Toast.LENGTH_LONG).show()
                 navController.navigate("${Screen.StudentScreen.route}/${studentDetails.id}")
             } else {
                 // Login failed
-                Toast.makeText(context, "Invalid credentials!", Toast.LENGTH_LONG).show()
+                Toast.makeText(context,
+                    context.getString(R.string.invalid_credentials), Toast.LENGTH_LONG).show()
             }
 //            } catch (e: Exception) {
 //                // Handle failure cases

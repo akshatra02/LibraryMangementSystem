@@ -1,8 +1,6 @@
-package com.example.lib_compose_sqlite.presentation.screens.books
+package com.example.lib_compose_sqlite.presentation.screens.books.removeBook
 
 import android.content.Context
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,11 +12,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.lib_compose_sqlite.data.local.books.toBook
+import com.example.lib_compose_sqlite.R
 import com.example.lib_compose_sqlite.presentation.AppViewModelProvider
 import com.example.lib_compose_sqlite.presentation.components.Header
 import com.example.lib_compose_sqlite.presentation.navigation.Screen
@@ -33,7 +32,7 @@ fun BookRemoveScreen(
     )
 ) {
     val bookDetails = viewModel.bookUiState.bookDetails
-    Header(navController, "Remove Book", Screen.AdminScreen.route)
+    Header(navController, stringResource(id = R.string.remove_book), Screen.AdminScreen.route)
     { values ->
         Column(
             modifier = Modifier
@@ -41,7 +40,7 @@ fun BookRemoveScreen(
         ) {
             Spacer(modifier = Modifier.height(20.dp))
 
-            Text(text = "Enter Book Id: ")
+            Text(text = stringResource(id = R.string.enter_book_id))
             TextField(
                 value =if (bookDetails.id !=0) bookDetails.id.toString() else "",
                 onValueChange = {
@@ -58,7 +57,7 @@ fun BookRemoveScreen(
                 onClick = {
                     viewModel.removeBook(navController, context, viewModel.bookUiState.bookDetails.id)
                 }) {
-                Text("Remove Book")
+                Text(stringResource(id = R.string.remove_book))
             }
         }
 

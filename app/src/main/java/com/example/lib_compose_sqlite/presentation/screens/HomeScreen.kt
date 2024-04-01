@@ -8,6 +8,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
@@ -16,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.lib_compose_sqlite.R
 import com.example.lib_compose_sqlite.data.DBHelper
 import com.example.lib_compose_sqlite.presentation.AppViewModelProvider
 import com.example.lib_compose_sqlite.presentation.components.Header
@@ -33,7 +35,7 @@ fun HomeScreen(navController: NavController) {
                 .fillMaxSize(),
             topBar = {
                 CenterAlignedTopAppBar(
-                    title = { Text(text = "LIBRARY MANAGEMENT SYSTEM") },
+                    title = { Text(text = stringResource(R.string.library_management_system)) },
                 )
             }
         ) { values ->
@@ -45,7 +47,7 @@ fun HomeScreen(navController: NavController) {
             ) {
                 Spacer(modifier = Modifier.height(100.dp))
                 Text(
-                    text = "Welcome to our Library!\n Explore the world of books and expand your horizons.",
+                    text = stringResource(R.string.welcome_to_our_library_explore_the_world_of_books_and_expand_your_horizons),
                     textAlign = TextAlign.Center,
                     style = TextStyle(fontSize = 20.sp)
                 )
@@ -56,7 +58,7 @@ fun HomeScreen(navController: NavController) {
                         navController.navigate(Screen.AdminLoginScreen.route)
 
                     }) {
-                    Text("Admin")
+                    Text(stringResource(R.string.admin))
 
                 }
                 Spacer(modifier = Modifier.height(20.dp))
@@ -65,7 +67,7 @@ fun HomeScreen(navController: NavController) {
                     onClick = {
                         navController.navigate(Screen.StudentLoginScreen.route)
                     }) {
-                    Text("Student")
+                    Text(stringResource(R.string.student))
 
                 }
             }
@@ -81,7 +83,7 @@ fun AdminSignupScreen(
     )
 ) {
     val adminUiDetails = viewmodel.adminUiState.adminDetails
-    Header(navController, "Admin", Screen.AdminLoginScreen.route)
+    Header(navController, stringResource(R.string.admin), Screen.AdminLoginScreen.route)
     { values ->
         Column(
             modifier = Modifier
@@ -89,10 +91,10 @@ fun AdminSignupScreen(
                 .padding(values),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "ADMIN SIGN UP PAGE")
+            Text(text = stringResource(R.string.admin_sign_up_page))
 
             Spacer(modifier = Modifier.height(20.dp))
-            Text(text = "Name")
+            Text(text = stringResource(R.string.name))
             TextField(
                 value = adminUiDetails.name, onValueChange = {
                     viewmodel.updateUiState(adminUiDetails.copy(name = it))
@@ -102,7 +104,7 @@ fun AdminSignupScreen(
             )
             Spacer(modifier = Modifier.height(20.dp))
 
-            Text(text = "Password")
+            Text(text = stringResource(R.string.password))
             TextField(
                 value = adminUiDetails.password, onValueChange = {
                     viewmodel.updateUiState(adminUiDetails.copy(password = it))
@@ -119,7 +121,7 @@ fun AdminSignupScreen(
                 onClick = {
                     viewmodel.addAdmin(navController, context)
                 }) {
-                Text("Signup")
+                Text(stringResource(R.string.signup))
 
             }
         }
@@ -133,7 +135,7 @@ fun AdminLoginScreen(
     )
 ) {
     val adminUiDetails = viewmodel.adminUiState.adminDetails
-    Header(navController, "Admin", Screen.HomeScreen.route)
+    Header(navController, stringResource(R.string.admin), Screen.HomeScreen.route)
     { values ->
         Column(
             modifier = Modifier
@@ -141,9 +143,9 @@ fun AdminLoginScreen(
                 .padding(values),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "ADMIN LOGIN PAGE")
+            Text(text = stringResource(R.string.admin_login_page))
             Spacer(modifier = Modifier.height(20.dp))
-            Text(text = "ID")
+            Text(text = stringResource(R.string.id))
             TextField(
                 value = if (adminUiDetails.id != 0L) adminUiDetails.id.toString() else "",
                 onValueChange = {
@@ -155,7 +157,7 @@ fun AdminLoginScreen(
 
             )
             Spacer(modifier = Modifier.height(20.dp))
-            Text(text = "Name")
+            Text(text = stringResource(R.string.name))
             TextField(
                 value = adminUiDetails.name, onValueChange = {
                     viewmodel.updateUiState(adminUiDetails.copy(name = it))
@@ -165,7 +167,7 @@ fun AdminLoginScreen(
             )
             Spacer(modifier = Modifier.height(20.dp))
 
-            Text(text = "Password")
+            Text(text = stringResource(R.string.password))
             TextField(
                 value = adminUiDetails.password, onValueChange = {
                     viewmodel.updateUiState(adminUiDetails.copy(password = it))
@@ -183,13 +185,13 @@ fun AdminLoginScreen(
                 }
             )
             {
-                Text("Login")
+                Text(stringResource(R.string.login))
 
             }
             Spacer(modifier = Modifier.height(30.dp))
 
             ClickableText(
-                text = AnnotatedString("New User...?Sign up"),
+                text = AnnotatedString(stringResource(R.string.new_user_sign_up)),
                 onClick = { navController.navigate(Screen.AdminSignupScreen.route) },
                 style = TextStyle(fontSize = 20.sp, color = MaterialTheme.colorScheme.secondary)
             )
@@ -205,7 +207,7 @@ fun StudentSignupScreen(
 ) {
     val studentUiDetails = viewModel.studentUiState.studentDetails
 
-    Header(navController, "Student", Screen.StudentLoginScreen.route)
+    Header(navController, stringResource(R.string.student), Screen.StudentLoginScreen.route)
     { values ->
         Column(
             modifier = Modifier
@@ -214,10 +216,10 @@ fun StudentSignupScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             val dbhelper: DBHelper = DBHelper(context)
-            Text(text = "STUDENT SIGN UP PAGE")
+            Text(text = stringResource(R.string.student_sign_up_page))
             Spacer(modifier = Modifier.height(20.dp))
 
-            Text(text = "Student Name")
+            Text(text = stringResource(R.string.student_name))
             TextField(
                 value = studentUiDetails.name, onValueChange = {
                     viewModel.updateUiState(studentUiDetails.copy(name = it))
@@ -227,7 +229,7 @@ fun StudentSignupScreen(
                     .fillMaxWidth()
             )
 
-            Text(text = "Student Password")
+            Text(text = stringResource(R.string.student_password))
             TextField(
                 value = studentUiDetails.password, onValueChange = {
                     viewModel.updateUiState(studentUiDetails.copy(password = it))
@@ -244,7 +246,7 @@ fun StudentSignupScreen(
                     viewModel.addStudent(navController, context)
                 }
             ) {
-                Text("Signup")
+                Text(stringResource(R.string.signup))
 
             }
         }
@@ -258,7 +260,7 @@ fun StudentLoginScreen(
     viewModel: StudentViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val studentUiDetails = viewModel.studentUiState.studentDetails
-    Header(navController, "Student", Screen.HomeScreen.route)
+    Header(navController, stringResource(R.string.student), Screen.HomeScreen.route)
     { values ->
         Column(
             modifier = Modifier
@@ -266,10 +268,10 @@ fun StudentLoginScreen(
                 .padding(values),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "STUDENT LOGIN PAGE")
+            Text(text = stringResource(R.string.student_login_page))
             Spacer(modifier = Modifier.height(20.dp))
 
-            Text(text = "Student ID")
+            Text(text = stringResource(R.string.student_id))
             TextField(
                 value = if (studentUiDetails.id != 0L) studentUiDetails.id.toString() else "",
                 onValueChange = {
@@ -282,7 +284,7 @@ fun StudentLoginScreen(
             )
             Spacer(modifier = Modifier.height(20.dp))
 
-            Text(text = "Student Name")
+            Text(text = stringResource(R.string.student_name))
             TextField(
                 value = studentUiDetails.name, onValueChange = {
                     viewModel.updateUiState(studentUiDetails.copy(name = it))
@@ -290,7 +292,7 @@ fun StudentLoginScreen(
                 modifier = Modifier
                     .fillMaxWidth()
             )
-            Text(text = "Student Password")
+            Text(text = stringResource(R.string.student_password))
             TextField(
                 value = studentUiDetails.password, onValueChange = {
                     viewModel.updateUiState(studentUiDetails.copy(password = it))
@@ -310,11 +312,10 @@ fun StudentLoginScreen(
             )
             {
                 Text("Login")
-
             }
             Spacer(modifier = Modifier.height(30.dp))
             ClickableText(
-                text = AnnotatedString("New User...?Sign up"),
+                text = AnnotatedString(stringResource(R.string.new_user_sign_up)),
                 onClick = { navController.navigate(Screen.StudentSignupScreen.route) },
                 style = TextStyle(fontSize = 20.sp, color = MaterialTheme.colorScheme.secondary)
 

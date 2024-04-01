@@ -1,9 +1,7 @@
 package com.example.lib_compose_sqlite.presentation.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,11 +14,11 @@ import com.example.lib_compose_sqlite.presentation.screens.StudentLoginScreen
 import com.example.lib_compose_sqlite.presentation.screens.StudentSignupScreen
 import com.example.lib_compose_sqlite.presentation.screens.admin.AdminScreen
 import com.example.lib_compose_sqlite.presentation.screens.admin.BooksScreen
-import com.example.lib_compose_sqlite.presentation.screens.books.AddBookScreen
-import com.example.lib_compose_sqlite.presentation.screens.books.BookRemoveScreen
-import com.example.lib_compose_sqlite.presentation.screens.books.IssueBookScreen
-import com.example.lib_compose_sqlite.presentation.screens.books.ReturnBookScreen
-import com.example.lib_compose_sqlite.presentation.screens.books.StudentMyBookScreen
+import com.example.lib_compose_sqlite.presentation.screens.books.addBook.AddBookScreen
+import com.example.lib_compose_sqlite.presentation.screens.books.removeBook.BookRemoveScreen
+import com.example.lib_compose_sqlite.presentation.screens.books.issueBook.IssueBookScreen
+import com.example.lib_compose_sqlite.presentation.screens.books.returnBook.ReturnBookScreen
+import com.example.lib_compose_sqlite.presentation.screens.books.studentBooks.StudentMyBookScreen
 import com.example.lib_compose_sqlite.presentation.screens.student.StudentBooksScreen
 import com.example.lib_compose_sqlite.presentation.screens.student.StudentScreen
 

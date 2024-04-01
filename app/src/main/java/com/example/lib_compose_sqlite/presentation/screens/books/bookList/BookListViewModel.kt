@@ -1,8 +1,8 @@
-package com.example.lib_compose_sqlite.presentation.screens.books
+package com.example.lib_compose_sqlite.presentation.screens.books.bookList
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.lib_compose_sqlite.data.local.books.BookEntity
+import com.example.lib_compose_sqlite.data.local.books.BookUiDetailsState
 import com.example.lib_compose_sqlite.data.repository.BookRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -21,7 +21,3 @@ class BookViewModel(
                 BookUiDetailsState()
             )
 }
-
-data class BookUiDetailsState(
-    val bookItem: List<BookEntity> = listOf()
-)

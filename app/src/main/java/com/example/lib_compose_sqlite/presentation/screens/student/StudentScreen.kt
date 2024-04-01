@@ -1,27 +1,17 @@
 package com.example.lib_compose_sqlite.presentation.screens.student
 
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
-import com.example.lib_compose_sqlite.domain.BookReturnStatus
+import com.example.lib_compose_sqlite.R
 //import com.example.lib_compose_sqlite.BookStatus
-import com.example.lib_compose_sqlite.data.DBHelper
 import com.example.lib_compose_sqlite.presentation.navigation.Screen
 import com.example.lib_compose_sqlite.presentation.components.CardComponent
 import com.example.lib_compose_sqlite.presentation.components.Header
-import com.example.lib_compose_sqlite.presentation.screens.books.BooksListScreen
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import com.example.lib_compose_sqlite.presentation.screens.books.bookList.BooksListScreen
 
 @Composable
 fun StudentScreen(navController: NavController ,studentId:Int){
@@ -34,17 +24,19 @@ fun StudentScreen(navController: NavController ,studentId:Int){
                     .padding(values),
             ) {
                 CardComponent(
-                    "All Books"
+                    stringResource(R.string.all_books)
                 ) {
                     navController.navigate("${Screen.StudentBooksScreen.route}/$studentId")
                 }
                 CardComponent(
-                    "My Book"
+                    stringResource(R.string.my_books)
+
                 ) {
                     navController.navigate("${Screen.StudentMyBookScreen.route}/$studentId")
                 }
                 CardComponent(
-                    "Return Book"
+                    stringResource(R.string.return_book)
+
                 ) {
                     navController.navigate("${Screen.ReturnBookScreen.route}/$studentId")
                 }

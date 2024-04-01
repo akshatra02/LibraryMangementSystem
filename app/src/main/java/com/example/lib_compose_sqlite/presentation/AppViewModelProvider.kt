@@ -6,13 +6,12 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.lib_compose_sqlite.LibraryApplication
 import com.example.lib_compose_sqlite.presentation.screens.admin.AdminViewModel
-import com.example.lib_compose_sqlite.presentation.screens.books.BookAddViewModel
-import com.example.lib_compose_sqlite.presentation.screens.books.BookRemoveViewModel
-import com.example.lib_compose_sqlite.presentation.screens.books.BookViewModel
-import com.example.lib_compose_sqlite.presentation.screens.books.IssueBookViewModel
-import com.example.lib_compose_sqlite.presentation.screens.books.ReturnBookScreen
-import com.example.lib_compose_sqlite.presentation.screens.books.ReturnBookViewModel
-import com.example.lib_compose_sqlite.presentation.screens.books.StudentMyBookViewModel
+import com.example.lib_compose_sqlite.presentation.screens.books.addBook.BookAddViewModel
+import com.example.lib_compose_sqlite.presentation.screens.books.removeBook.BookRemoveViewModel
+import com.example.lib_compose_sqlite.presentation.screens.books.bookList.BookViewModel
+import com.example.lib_compose_sqlite.presentation.screens.books.issueBook.IssueBookViewModel
+import com.example.lib_compose_sqlite.presentation.screens.books.returnBook.ReturnBookViewModel
+import com.example.lib_compose_sqlite.presentation.screens.books.studentBooks.StudentMyBookViewModel
 import com.example.lib_compose_sqlite.presentation.screens.student.StudentViewModel
 
 

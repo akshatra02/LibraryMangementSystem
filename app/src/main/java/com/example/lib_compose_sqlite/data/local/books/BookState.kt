@@ -22,3 +22,6 @@ fun BookDetails.toBook(): BookEntity = BookEntity(
     bookType = BookType.valueOf(type),
     reservedStudentId = reservedStudentId
 )
+data class BookUiDetailsState(
+    val bookItem: List<BookEntity> = listOf()
+)

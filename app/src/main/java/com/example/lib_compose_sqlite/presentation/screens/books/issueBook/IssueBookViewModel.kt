@@ -1,4 +1,4 @@
-package com.example.lib_compose_sqlite.presentation.screens.books
+package com.example.lib_compose_sqlite.presentation.screens.books.issueBook
 
 import android.content.Context
 import android.widget.Toast
@@ -8,6 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.example.lib_compose_sqlite.R
 import com.example.lib_compose_sqlite.data.local.books.BookDetails
 import com.example.lib_compose_sqlite.data.local.books.BookEntity
 import com.example.lib_compose_sqlite.data.local.student.StudentDetails
@@ -36,21 +37,31 @@ class IssueBookViewModel(private val bookRepository: BookRepository, private val
         viewModelScope.launch {
             val bookId = bookUiState.id
             val studentId = studentUiState.id
-            val studentBookCount = studentUiState.bookCount
-            val getBook = bookRepository.getBookById(bookId)
-            val getStudent = studentRepository.getStudentById(studentId)
-            val book: BookEntity = getBook.copy(reservedStudentId = studentId)
-            val student: StudentEntity = getStudent.copy(studentReservedBookCount = studentBookCount + 1)
-            val updateBook = bookRepository.updateBook(book)
-            val updateStudent = studentRepository.updateStudent(student)
-            if (updateBook != 0 && updateStudent != 0){
-                Toast.makeText(context, "Book Issued successfully!", Toast.LENGTH_LONG).show()
-                navController.navigate(Screen.AdminScreen.route)
-            }
-            else{
+            var studentBookCount = studentUiState.bookCount
+            if (studentBookCount < 3) {
+                studentBookCount ++
+                val getBook = bookRepository.getBookById(bookId)
+                val getStudent = studentRepository.getStudentById(studentId)
+                val book: BookEntity = getBook.copy(reservedStudentId = studentId)
+                val student: StudentEntity =
+                    getStudent.copy(studentReservedBookCount = studentBookCount)
+                val updateBook = bookRepository.updateBook(book)
+                val updateStudent = studentRepository.updateStudent(student)
+                if (updateBook != 0 && updateStudent != 0) {
+                    Toast.makeText(context,
+                        context.getString(R.string.book_issued_successfully), Toast.LENGTH_LONG).show()
+                    navController.navigate(Screen.AdminScreen.route)
+                } else {
 
-                Toast.makeText(context, "Failed to issue book", Toast.LENGTH_LONG).show()
-                navController.navigate(Screen.IssueBookScreen.route)
+                    Toast.makeText(context,
+                        context.getString(R.string.failed_to_issue_book), Toast.LENGTH_LONG).show()
+                    navController.navigate(Screen.IssueBookScreen.route)
+                }
+            } else {
+
+                Toast.makeText(context,
+                    context.getString(R.string.student_s_book_limit_exceeded), Toast.LENGTH_LONG).show()
+                navController.navigate(Screen.AdminScreen.route)
             }
         }
     }
