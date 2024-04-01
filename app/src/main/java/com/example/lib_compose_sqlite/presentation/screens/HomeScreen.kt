@@ -20,6 +20,7 @@ import com.example.lib_compose_sqlite.data.DBHelper
 import com.example.lib_compose_sqlite.presentation.AppViewModelProvider
 import com.example.lib_compose_sqlite.presentation.components.Header
 import com.example.lib_compose_sqlite.presentation.navigation.Screen
+import com.example.lib_compose_sqlite.presentation.screens.admin.AdminViewModel
 import com.example.lib_compose_sqlite.presentation.screens.student.StudentViewModel
 import com.example.lib_compose_sqlite.presentation.theme.LIB_COMPOSE_SQLITETheme
 
@@ -266,7 +267,6 @@ fun StudentLoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(text = "STUDENT LOGIN PAGE")
-            val dbhelper = DBHelper(context)
             Spacer(modifier = Modifier.height(20.dp))
 
             Text(text = "Student ID")

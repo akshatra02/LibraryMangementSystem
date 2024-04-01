@@ -12,7 +12,7 @@ data class BookDetails(
     val author: String = "",
     val title: String = "",
     val type: String = "",
-    val reservedStudentId: Int = 0,
+    val reservedStudentId: Long = 0L,
 
     )
 fun BookDetails.toBook(): BookEntity = BookEntity(

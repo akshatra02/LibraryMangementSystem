@@ -1,4 +1,4 @@
-package com.example.lib_compose_sqlite.presentation.screens
+package com.example.lib_compose_sqlite.presentation.screens.admin
 
 import android.content.Context
 import android.widget.Toast

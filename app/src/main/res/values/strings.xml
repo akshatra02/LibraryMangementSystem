@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">LIB_COMPOSE_SQLITE</string>
+    <string name="available">🟢 Available</string>
 </resources>

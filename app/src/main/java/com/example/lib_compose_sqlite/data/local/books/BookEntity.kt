@@ -10,7 +10,7 @@ data class BookEntity(
     @ColumnInfo(name = "book_title") val bookTitle: String,
     @ColumnInfo(name = "book_author") val bookAuthor: String,
     @ColumnInfo(name = "book_type") val bookType: BookType,
-    @ColumnInfo(name = "reserved_student_id") val reservedStudentId: Int = 0,
+    @ColumnInfo(name = "reserved_student_id") var reservedStudentId: Long = 0,
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "book_id")val bookId: Int = 0,

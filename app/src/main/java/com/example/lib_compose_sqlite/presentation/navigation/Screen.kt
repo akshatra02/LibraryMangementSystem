@@ -10,7 +10,7 @@ package com.example.lib_compose_sqlite.presentation.navigation
         object BooksScreen : Screen("books_screen")
         object IssueBookScreen : Screen("issue_books_screen")
         object AddBookScreen : Screen("add_books_screen")
-        object RemoveBookScreen : Screen("removebooks_screen")
+        object BookRemoveScreen : Screen("removebooks_screen")
         object StudentBooksScreen : Screen("student_books_screen")
         object StudentMyBookScreen : Screen("student_mybooks_screen")
         object ReturnBookScreen : Screen("return_book_screen")

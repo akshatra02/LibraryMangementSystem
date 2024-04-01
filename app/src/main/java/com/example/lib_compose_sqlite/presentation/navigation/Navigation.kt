@@ -14,14 +14,14 @@ import com.example.lib_compose_sqlite.presentation.screens.AdminSignupScreen
 import com.example.lib_compose_sqlite.presentation.screens.HomeScreen
 import com.example.lib_compose_sqlite.presentation.screens.StudentLoginScreen
 import com.example.lib_compose_sqlite.presentation.screens.StudentSignupScreen
-import com.example.lib_compose_sqlite.presentation.screens.admin.AddBookScreen
 import com.example.lib_compose_sqlite.presentation.screens.admin.AdminScreen
 import com.example.lib_compose_sqlite.presentation.screens.admin.BooksScreen
-import com.example.lib_compose_sqlite.presentation.screens.admin.IssueBookScreen
-import com.example.lib_compose_sqlite.presentation.screens.admin.RemoveBookScreen
-import com.example.lib_compose_sqlite.presentation.screens.student.ReturnBookScreen
+import com.example.lib_compose_sqlite.presentation.screens.books.AddBookScreen
+import com.example.lib_compose_sqlite.presentation.screens.books.BookRemoveScreen
+import com.example.lib_compose_sqlite.presentation.screens.books.IssueBookScreen
+import com.example.lib_compose_sqlite.presentation.screens.books.ReturnBookScreen
+import com.example.lib_compose_sqlite.presentation.screens.books.StudentMyBookScreen
 import com.example.lib_compose_sqlite.presentation.screens.student.StudentBooksScreen
-import com.example.lib_compose_sqlite.presentation.screens.student.StudentMyBookScreen
 import com.example.lib_compose_sqlite.presentation.screens.student.StudentScreen
 
 
@@ -60,8 +60,8 @@ fun LibraryNavHost( ){
         composable(route = Screen.AddBookScreen.route){
             AddBookScreen(navController, LocalContext.current)
         }
-        composable(route = Screen.RemoveBookScreen.route){
-            RemoveBookScreen(navController, LocalContext.current)
+        composable(route = Screen.BookRemoveScreen.route){
+            BookRemoveScreen(navController, LocalContext.current)
         }
         composable(
             route = "${Screen.StudentScreen.route}/{studentId}",

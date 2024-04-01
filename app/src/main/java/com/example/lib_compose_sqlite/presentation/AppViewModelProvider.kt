@@ -5,9 +5,14 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.lib_compose_sqlite.LibraryApplication
-import com.example.lib_compose_sqlite.presentation.screens.AdminViewModel
+import com.example.lib_compose_sqlite.presentation.screens.admin.AdminViewModel
 import com.example.lib_compose_sqlite.presentation.screens.books.BookAddViewModel
+import com.example.lib_compose_sqlite.presentation.screens.books.BookRemoveViewModel
 import com.example.lib_compose_sqlite.presentation.screens.books.BookViewModel
+import com.example.lib_compose_sqlite.presentation.screens.books.IssueBookViewModel
+import com.example.lib_compose_sqlite.presentation.screens.books.ReturnBookScreen
+import com.example.lib_compose_sqlite.presentation.screens.books.ReturnBookViewModel
+import com.example.lib_compose_sqlite.presentation.screens.books.StudentMyBookViewModel
 import com.example.lib_compose_sqlite.presentation.screens.student.StudentViewModel
 
 
@@ -28,6 +33,21 @@ object AppViewModelProvider {
         initializer {
             StudentViewModel(libraryApplication().appContainer.studentRepository)
         }
+
+        initializer {
+            BookRemoveViewModel(libraryApplication().appContainer.bookRepository)
+        }
+
+        initializer {
+            IssueBookViewModel(libraryApplication().appContainer.bookRepository,libraryApplication().appContainer.studentRepository)
+        }
+        initializer {
+            StudentMyBookViewModel(libraryApplication().appContainer.bookRepository)
+        }
+        initializer {
+            ReturnBookViewModel(libraryApplication().appContainer.bookRepository,libraryApplication().appContainer.studentRepository)
+        }
+
     }
 }
 fun CreationExtras.libraryApplication() : LibraryApplication =
